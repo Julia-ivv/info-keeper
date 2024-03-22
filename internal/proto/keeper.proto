@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/Julia-ivv/info-keeper.git/internal/proto";
+
+message AddCardRequest {
+  string prompt = 1;
+  string number = 2;
+  string date = 3;
+  string code = 4;
+}
+
+message AddCardResponse {}
+
+message AddLoginRequest {
+  string prompt = 1;
+  string login = 2;
+  string pwd = 3;
+}
+
+message AddLoginResponse {}
+
+message AddBinaryDataRequest {
+  string prompt = 1;
+  string data = 2;
+}
+
+message AddBinaryDataResponse {}
+
+message AddTextDataRequest {
+  string prompt = 1;
+  string data = 2;
+}
+
+message AddTextDataResponse {}
+
+message GetUserDataRequest {}
+
+message GetUserDataResponse {}
+
+message GetUserCardRequest {
+  string prompt = 1;
+}
+
+message GetUserCardResponse {
+  message UserCard {
+    string prompt = 1;
+    string number = 2;
+    string date = 3;
+    string code = 4;
+  }
+  repeated UserCard user_cards = 1;
+}
+
+message GetUserLoginRequest {
+  string prompt = 1;
+}
+
+message GetUserLoginResponse {
+  message UserLogin {
+    string prompt = 1;
+    string login = 2;
+    string pwd = 3;
+  }
+  repeated UserLogin user_logins = 1;
+}
+
+message GetUserTextDataRequest {
+  string prompt = 1;
+}
+
+message GetUserTextDataResponse {
+  message UserTextData {
+    string prompt = 1;
+    string data = 2;
+  }
+  repeated UserTextData user_text_records = 1;
+}
+
+message GetUserBinaryDataRequest {
+  string prompt = 1;
+}
+
+message GetUserBinaryDataResponse {
+  message UserBinaryData {
+    string prompt = 1;
+    string data = 2;
+  }
+  repeated UserBinaryData user_binary_records = 1;
+}
+
+service InfoKeeper {
+  rpc AddCard(AddCardRequest) returns (AddCardResponse);
+  rpc AddLogin(AddLoginRequest) returns (AddLoginResponse);
+  rpc AddBinaryData(AddBinaryDataRequest) returns (AddBinaryDataResponse);
+  rpc AddTextData(AddTextDataRequest) returns (AddTextDataResponse);
+  rpc GetUserData(GetUserDataRequest) returns (GetUserDataResponse);
+  rpc GetUserCard(GetUserCardRequest) returns (GetUserCardResponse);
+  rpc GetUserLogin(GetUserLoginRequest) returns (GetUserLoginResponse);
+  rpc GetUserTextData(GetUserTextDataRequest) returns (GetUserTextDataResponse);
+  rpc GetUserBinaryData(GetUserBinaryDataRequest) returns (GetUserBinaryDataResponse);
+}

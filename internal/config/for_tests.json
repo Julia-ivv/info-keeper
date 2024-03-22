@@ -1,0 +1,4 @@
+{
+    "server_address":"localhost:9090",
+    "database_dsn":""
+}
