@@ -9,8 +9,8 @@ import (
 
 // Flags stores application launch settings.
 type Flags struct {
-	// Host (flag -a) - HTTP server launch address,  e.g. localhost:8080.
-	Host string `env:"SERVER_ADDRESS" json:"server_address"`
+	// GRPC (flag -g) - port for gRPC, e.g. :3200.
+	GRPC string `env:"GRPC_PORT" json:"grpc"`
 	// URL (flag -b) - the base address of the resulting shortened URL, e.g.  http://localhost:8080.
 	DBDSN string `env:"DATABASE_DSN" json:"database_dsn"`
 	// ConfigFileName (flag -c/-config) - the name of configuration file
@@ -18,14 +18,14 @@ type Flags struct {
 
 // Default values for flags.
 const (
-	defHost string = ":8080"
+	defGRPC string = ":3200"
 )
 
 // NewConfig creates an instance with settings from flags or environment variables.
 func NewConfig() *Flags {
 	c := &Flags{}
 
-	flag.StringVar(&c.Host, "a", defHost, "HTTP server start address")
+	flag.StringVar(&c.GRPC, "g", defGRPC, "gRPC port")
 	flag.StringVar(&c.DBDSN, "d", "", "database connection address")
 	flag.Parse()
 

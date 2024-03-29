@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/Julia-ivv/info-keeper.git/internal/proto";
+
+message UserTextRecord {
+  string prompt = 1;
+  string data = 2;
+  string note = 3;
+  string time_stamp = 4;
+}

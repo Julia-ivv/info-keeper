@@ -9,6 +9,6 @@ import (
 func TestNewConfig(t *testing.T) {
 	flags := NewConfig()
 	if assert.NotEmpty(t, flags) {
-		assert.NotEmpty(t, flags.Host)
+		assert.NotEmpty(t, flags.GRPC)
 	}
 }
