@@ -234,19 +234,19 @@ func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDat
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	newCards, err := ks.stor.GetUserCards(ctx, userLogin, lastSync)
+	newCards, err := ks.stor.GetUserCardsAfterTime(ctx, userLogin, lastSync)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	newLogins, err := ks.stor.GetUserLoginsPwds(ctx, userLogin, lastSync)
+	newLogins, err := ks.stor.GetUserLoginsPwdsAfterTime(ctx, userLogin, lastSync)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	newTextRecords, err := ks.stor.GetUserTextRecords(ctx, userLogin, lastSync)
+	newTextRecords, err := ks.stor.GetUserTextRecordsAfterTime(ctx, userLogin, lastSync)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	newBinaryRecords, err := ks.stor.GetUserBinaryRecords(ctx, userLogin, lastSync)
+	newBinaryRecords, err := ks.stor.GetUserBinaryRecordsAfterTime(ctx, userLogin, lastSync)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -379,7 +379,7 @@ func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDat
 			Prompt:    v.Prompt,
 			Data:      v.Data,
 			Note:      v.Note,
-			TimeStamp: v.Time_stamp.Format(time.RFC3339),
+			TimeStamp: v.TimeStamp.Format(time.RFC3339),
 		})
 	}
 
@@ -389,7 +389,7 @@ func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDat
 			Prompt:    v.Prompt,
 			Data:      v.Data,
 			Note:      v.Note,
-			TimeStamp: v.Time_stamp.Format(time.RFC3339),
+			TimeStamp: v.TimeStamp.Format(time.RFC3339),
 		})
 	}
 
@@ -466,7 +466,7 @@ func (ks *KeeperGRPCServer) GetUserText(ctx context.Context, in *pb.GetUserTextR
 			Prompt:    tr.Prompt,
 			Data:      tr.Data,
 			Note:      tr.Note,
-			TimeStamp: tr.Time_stamp.Format(time.RFC3339),
+			TimeStamp: tr.TimeStamp.Format(time.RFC3339),
 		},
 	}, nil
 }
@@ -490,7 +490,7 @@ func (ks *KeeperGRPCServer) GetUserBinary(ctx context.Context, in *pb.GetUserBin
 			Prompt:    br.Prompt,
 			Data:      br.Data,
 			Note:      br.Note,
-			TimeStamp: br.Time_stamp.Format(time.RFC3339),
+			TimeStamp: br.TimeStamp.Format(time.RFC3339),
 		},
 	}, nil
 }

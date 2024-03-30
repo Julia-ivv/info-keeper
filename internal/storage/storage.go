@@ -15,7 +15,7 @@ type Customer interface {
 type CardWorker interface {
 	AddCard(ctx context.Context, userLogin string, prompt string,
 		number string, date string, code string, note string, timeStamp time.Time) (err error)
-	GetUserCards(ctx context.Context, userLogin string, lastSync time.Time) (cards []Card, err error)
+	GetUserCardsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (cards []Card, err error)
 	GetCard(ctx context.Context, userLogin string, number string) (card Card, err error)
 	ForceUpdateCard(ctx context.Context, userLogin string, prompt string,
 		number string, date string, code string, note string, timeStamp time.Time) (err error)
@@ -24,7 +24,7 @@ type CardWorker interface {
 type LoginPwdWorker interface {
 	AddLoginPwd(ctx context.Context, userLogin string, prompt string,
 		login string, pwd string, note string, timeStamp time.Time) (err error)
-	GetUserLoginsPwds(ctx context.Context, userLogin string, lastSync time.Time) (loginsPwds []LoginPwd, err error)
+	GetUserLoginsPwdsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (loginsPwds []LoginPwd, err error)
 	GetLoginPwd(ctx context.Context, userLogin string, prompt string, login string) (loginPwd LoginPwd, err error)
 	ForceUpdateLoginPwd(ctx context.Context, userLogin string, prompt string,
 		login string, pwd string, note string, timeStamp time.Time) (err error)
@@ -33,7 +33,7 @@ type LoginPwdWorker interface {
 type TextDataWorker interface {
 	AddTextRecord(ctx context.Context, userLogin string, prompt string,
 		data string, note string, timeStamp time.Time) (err error)
-	GetUserTextRecords(ctx context.Context, userLogin string, lastSync time.Time) (records []TextRecord, err error)
+	GetUserTextRecordsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (records []TextRecord, err error)
 	GetTextRecord(ctx context.Context, userLogin string, prompt string) (record TextRecord, err error)
 	ForceUpdateTextRecord(ctx context.Context, userLogin string, prompt string,
 		data string, note string, timeStamp time.Time) (err error)
@@ -42,7 +42,7 @@ type TextDataWorker interface {
 type BinaryDataWorker interface {
 	AddBinaryRecord(ctx context.Context, userLogin string, prompt string,
 		data []byte, note string, timeStamp time.Time) (err error)
-	GetUserBinaryRecords(ctx context.Context, userLogin string, lastSync time.Time) (records []BinaryRecord, err error)
+	GetUserBinaryRecordsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (records []BinaryRecord, err error)
 	GetBinaryRecord(ctx context.Context, userLogin string, prompt string) (record BinaryRecord, err error)
 	ForceUpdateBinaryRecord(ctx context.Context, userLogin string, prompt string,
 		data []byte, note string, timeStamp time.Time) (err error)

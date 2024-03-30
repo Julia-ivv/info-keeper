@@ -9,6 +9,9 @@ const (
 	ExistsDataNewerVersion TypeStorErrors = "there is data with a newer version"
 	EmptyValues            TypeStorErrors = "empty required fields"
 	NullValues             TypeStorErrors = "required values are null"
+	EncryptionError        TypeStorErrors = "encryption error"
+	DecryptionError        TypeStorErrors = "decryption error"
+	EmptyResult            TypeStorErrors = "the requested data not found"
 )
 
 type StorErr struct {
