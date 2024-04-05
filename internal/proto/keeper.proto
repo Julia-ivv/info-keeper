@@ -52,7 +52,7 @@ message AddTextDataRequest {
 message AddTextDataResponse {}
 
 message GetUserCardRequest {
-  string number = 1;
+  bytes number = 1;
 }
 
 message GetUserCardResponse {
@@ -60,8 +60,8 @@ message GetUserCardResponse {
 }
 
 message GetUserLoginRequest {
-  string prompt = 1;
-  string login = 2;
+  bytes prompt = 1;
+  bytes login = 2;
 }
 
 message GetUserLoginResponse {
@@ -69,19 +69,19 @@ message GetUserLoginResponse {
 }
 
 message GetUserTextRequest {
-  string prompt = 1;
+  bytes prompt = 1;
 }
 
 message GetUserTextResponse {
-    UserTextRecord text_record = 1;
+  UserTextRecord text_record = 1;
 }
 
 message GetUserBinaryRequest {
-  string prompt = 1;
+  bytes prompt = 1;
 }
 
 message GetUserBinaryResponse {
-    UserBinaryRecord binary_record = 1;
+  UserBinaryRecord binary_record = 1;
 }
 
 message SyncUserDataRequest {
@@ -93,7 +93,12 @@ message SyncUserDataRequest {
 }
 
 message SyncUserDataResponse {
-  repeated string sync_errors = 1;
+  message SyncErrorInfo {
+    string text = 1;
+    bytes value = 2;
+    string err = 3;
+  }
+  repeated SyncErrorInfo sync_errors = 1;
   repeated UserLoginPwd new_logins = 2;
   repeated UserCard new_cards = 3;
   repeated UserTextRecord new_text_records = 4;

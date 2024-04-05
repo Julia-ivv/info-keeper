@@ -5,8 +5,8 @@ package proto;
 option go_package = "github.com/Julia-ivv/info-keeper.git/internal/proto";
 
 message UserBinaryRecord {
-  string prompt = 1;
+  bytes prompt = 1;
   bytes data = 2;
-  string note = 3;
+  bytes note = 3;
   string time_stamp = 4;
 }

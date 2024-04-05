@@ -5,10 +5,10 @@ package proto;
 option go_package = "github.com/Julia-ivv/info-keeper.git/internal/proto";
 
 message UserCard {
-  string prompt = 1;
-  string number = 2;
-  string date = 3;
-  string code = 4;
-  string note = 5;
+  bytes prompt = 1;
+  bytes number = 2;
+  bytes date = 3;
+  bytes code = 4;
+  bytes note = 5;
   string time_stamp = 6;
 }

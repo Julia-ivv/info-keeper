@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"slices"
-	"sync"
 	"time"
 
 	"github.com/jackc/pgerrcode"
@@ -16,7 +15,6 @@ import (
 	"github.com/Julia-ivv/info-keeper.git/internal/config"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 	"github.com/Julia-ivv/info-keeper.git/internal/storage"
-	"github.com/Julia-ivv/info-keeper.git/pkg/logger"
 )
 
 // ShortenerServer stores the repository and settings of this application.
@@ -57,7 +55,7 @@ func (ks *KeeperGRPCServer) AddUser(ctx context.Context, in *pb.AddUserRequest) 
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	tokenString, err := authorizer.BuildToken(in.Login, in.Pwd)
+	tokenString, err := authorizer.BuildToken(in.Login, in.Pwd, ks.cfg.SecretKey)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -79,7 +77,7 @@ func (ks *KeeperGRPCServer) AuthUser(ctx context.Context, in *pb.AuthUserRequest
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	tokenString, err := authorizer.BuildToken(in.GetLogin(), in.GetPwd())
+	tokenString, err := authorizer.BuildToken(in.GetLogin(), in.GetPwd(), ks.cfg.SecretKey)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -90,9 +88,14 @@ func (ks *KeeperGRPCServer) AuthUser(ctx context.Context, in *pb.AuthUserRequest
 func (ks *KeeperGRPCServer) AddCard(ctx context.Context, in *pb.AddCardRequest) (*pb.AddCardResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if in.GetCard() == nil {
 		return nil, status.Error(codes.DataLoss, "empty request")
@@ -106,9 +109,6 @@ func (ks *KeeperGRPCServer) AddCard(ctx context.Context, in *pb.AddCardRequest) 
 		in.Card.GetCode(), in.Card.GetNote(), timeStamp)
 	if err != nil {
 		var addErr *storage.StorErr
-		if errors.As(err, &addErr) && addErr.ErrType == storage.NullValues {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
 		if errors.As(err, &addErr) && addErr.ErrType == storage.EmptyValues {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
@@ -124,9 +124,14 @@ func (ks *KeeperGRPCServer) AddCard(ctx context.Context, in *pb.AddCardRequest) 
 func (ks *KeeperGRPCServer) AddLogin(ctx context.Context, in *pb.AddLoginRequest) (*pb.AddLoginResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if in.GetLoginPwd() == nil {
 		return nil, status.Error(codes.DataLoss, "empty request")
@@ -139,9 +144,6 @@ func (ks *KeeperGRPCServer) AddLogin(ctx context.Context, in *pb.AddLoginRequest
 	err = ks.stor.AddLoginPwd(ctx, userLogin, in.LoginPwd.GetPrompt(), in.LoginPwd.GetLogin(), in.LoginPwd.GetPwd(), in.LoginPwd.GetNote(), timeStamp)
 	if err != nil {
 		var addErr *storage.StorErr
-		if errors.As(err, &addErr) && addErr.ErrType == storage.NullValues {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
 		if errors.As(err, &addErr) && addErr.ErrType == storage.EmptyValues {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
@@ -157,9 +159,14 @@ func (ks *KeeperGRPCServer) AddLogin(ctx context.Context, in *pb.AddLoginRequest
 func (ks *KeeperGRPCServer) AddTextData(ctx context.Context, in *pb.AddTextDataRequest) (*pb.AddTextDataResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if in.GetTextRecord() == nil {
 		return nil, status.Error(codes.DataLoss, "empty request")
@@ -172,9 +179,6 @@ func (ks *KeeperGRPCServer) AddTextData(ctx context.Context, in *pb.AddTextDataR
 	err = ks.stor.AddTextRecord(ctx, userLogin, in.TextRecord.GetPrompt(), in.TextRecord.GetData(), in.TextRecord.GetNote(), timeStamp)
 	if err != nil {
 		var addErr *storage.StorErr
-		if errors.As(err, &addErr) && addErr.ErrType == storage.NullValues {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
 		if errors.As(err, &addErr) && addErr.ErrType == storage.EmptyValues {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
@@ -190,9 +194,14 @@ func (ks *KeeperGRPCServer) AddTextData(ctx context.Context, in *pb.AddTextDataR
 func (ks *KeeperGRPCServer) AddBinaryData(ctx context.Context, in *pb.AddBinaryDataRequest) (*pb.AddBinaryDataResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if in.GetBinaryRecord() == nil {
 		return nil, status.Error(codes.DataLoss, "empty request")
@@ -202,14 +211,10 @@ func (ks *KeeperGRPCServer) AddBinaryData(ctx context.Context, in *pb.AddBinaryD
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	logger.ZapSugar.Info("get data ", in.BinaryRecord.GetData())
 
 	err = ks.stor.AddBinaryRecord(ctx, userLogin, in.BinaryRecord.GetPrompt(), in.BinaryRecord.GetData(), in.BinaryRecord.GetNote(), timeStamp)
 	if err != nil {
 		var addErr *storage.StorErr
-		if errors.As(err, &addErr) && addErr.ErrType == storage.NullValues {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		}
 		if errors.As(err, &addErr) && addErr.ErrType == storage.EmptyValues {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
@@ -222,14 +227,25 @@ func (ks *KeeperGRPCServer) AddBinaryData(ctx context.Context, in *pb.AddBinaryD
 	return nil, nil
 }
 
+type SyncErrInfo struct {
+	Text  string
+	Value []byte
+	Err   string
+}
+
 func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDataRequest) (*pb.SyncUserDataResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
 
-	lastSync, err := time.Parse(time.RFC3339, in.GetLastSync())
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
+
+	lastSync, err := time.Parse(time.RFC3339, string(in.GetLastSync()))
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -251,104 +267,107 @@ func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDat
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	numErrors := 10
-	syncErrorsCh := make(chan string, numErrors)
-	defer close(syncErrorsCh)
-
-	wgSyncErrors := sync.WaitGroup{}
-
-	var respErrors []string
-	go func() {
-		for e := range syncErrorsCh {
-			respErrors = append(respErrors, e)
-		}
-	}()
+	var respErrors []SyncErrInfo
 
 	if in.GetCards() != nil {
-		wgSyncErrors.Add(1)
-		go func() {
-			for _, v := range in.GetCards() {
-				timeStamp, err := time.Parse(time.RFC3339, v.GetTimeStamp())
-				if err != nil {
-					syncErrorsCh <- "error for card number " + v.GetNumber() + ": " + err.Error()
-					continue
-				}
-				err = ks.stor.AddCard(ctx, userLogin, v.GetPrompt(), v.GetNumber(), v.GetDate(), v.GetCode(), v.GetNote(), timeStamp)
-				if err != nil {
-					syncErrorsCh <- "error for card number " + v.GetNumber() + ": " + err.Error()
-				}
-				newCards = slices.DeleteFunc(newCards, func(c storage.Card) bool {
-					return c.Number == v.GetNumber()
+		for _, v := range in.GetCards() {
+			timeStamp, err := time.Parse(time.RFC3339, v.GetTimeStamp())
+			if err != nil {
+				respErrors = append(respErrors, SyncErrInfo{
+					Text:  "error for card number ",
+					Value: v.GetNumber(),
+					Err:   err.Error(),
+				})
+				continue
+			}
+			err = ks.stor.AddCard(ctx, userLogin, v.GetPrompt(), v.GetNumber(), v.GetDate(), v.GetCode(), v.GetNote(), timeStamp)
+			if err != nil {
+				respErrors = append(respErrors, SyncErrInfo{
+					Text:  "error for card number ",
+					Value: v.GetNumber(),
+					Err:   err.Error(),
 				})
 			}
-			wgSyncErrors.Done()
-		}()
+			newCards = slices.DeleteFunc(newCards, func(c storage.Card) bool {
+				return slices.Compare(c.Number, v.GetNumber()) == 0
+			})
+		}
 	}
 
 	if in.GetLogins() != nil {
-		wgSyncErrors.Add(1)
-		go func() {
-			for _, v := range in.GetLogins() {
-				timeStamp, err := time.Parse(time.RFC3339, v.GetTimeStamp())
-				if err != nil {
-					syncErrorsCh <- "error for pair login/password with prompt " + v.GetPrompt() + ": " + err.Error()
-					continue
-				}
-				err = ks.stor.AddLoginPwd(ctx, userLogin, v.GetPrompt(), v.GetLogin(), v.GetPwd(), v.GetNote(), timeStamp)
-				if err != nil {
-					syncErrorsCh <- "error for pair login/password with prompt " + v.GetPrompt() + ": " + err.Error()
-				}
-				newLogins = slices.DeleteFunc(newLogins, func(l storage.LoginPwd) bool {
-					return l.Prompt == v.GetPrompt() && l.Login == v.GetLogin()
+		for _, v := range in.GetLogins() {
+			timeStamp, err := time.Parse(time.RFC3339, v.GetTimeStamp())
+			if err != nil {
+				respErrors = append(respErrors, SyncErrInfo{
+					Text:  "error for pair login/password with prompt ",
+					Value: v.GetPrompt(),
+					Err:   err.Error(),
+				})
+				continue
+			}
+			err = ks.stor.AddLoginPwd(ctx, userLogin, v.GetPrompt(), v.GetLogin(), v.GetPwd(), v.GetNote(), timeStamp)
+			if err != nil {
+				respErrors = append(respErrors, SyncErrInfo{
+					Text:  "error for pair login/password with prompt ",
+					Value: v.GetPrompt(),
+					Err:   err.Error(),
 				})
 			}
-			wgSyncErrors.Done()
-		}()
+			newLogins = slices.DeleteFunc(newLogins, func(l storage.LoginPwd) bool {
+				return slices.Compare(l.Prompt, v.GetPrompt()) == 0 && slices.Compare(l.Login, v.GetLogin()) == 0
+			})
+		}
 	}
 
 	if in.GetTextRecords() != nil {
-		wgSyncErrors.Add(1)
-		go func() {
-			for _, v := range in.GetTextRecords() {
-				timeStamp, err := time.Parse(time.RFC3339, v.GetTimeStamp())
-				if err != nil {
-					syncErrorsCh <- "error for text data with prompt " + v.GetPrompt() + ": " + err.Error()
-					continue
-				}
-				err = ks.stor.AddTextRecord(ctx, userLogin, v.GetPrompt(), v.GetData(), v.GetNote(), timeStamp)
-				if err != nil {
-					syncErrorsCh <- "error for text data with prompt " + v.GetPrompt() + ": " + err.Error()
-				}
-				newTextRecords = slices.DeleteFunc(newTextRecords, func(t storage.TextRecord) bool {
-					return t.Prompt == v.GetPrompt()
+		for _, v := range in.GetTextRecords() {
+			timeStamp, err := time.Parse(time.RFC3339, v.GetTimeStamp())
+			if err != nil {
+				respErrors = append(respErrors, SyncErrInfo{
+					Text:  "error for text data with prompt ",
+					Value: v.GetPrompt(),
+					Err:   err.Error(),
+				})
+				continue
+			}
+			err = ks.stor.AddTextRecord(ctx, userLogin, v.GetPrompt(), v.GetData(), v.GetNote(), timeStamp)
+			if err != nil {
+				respErrors = append(respErrors, SyncErrInfo{
+					Text:  "error for text data with prompt ",
+					Value: v.GetPrompt(),
+					Err:   err.Error(),
 				})
 			}
-			wgSyncErrors.Done()
-		}()
+			newTextRecords = slices.DeleteFunc(newTextRecords, func(t storage.TextRecord) bool {
+				return slices.Compare(t.Prompt, v.GetPrompt()) == 0
+			})
+		}
 	}
 
 	if in.GetBinaryRecords() != nil {
-		wgSyncErrors.Add(1)
-		go func() {
-			for _, v := range in.GetBinaryRecords() {
-				timeStamp, err := time.Parse(time.RFC3339, v.GetTimeStamp())
-				if err != nil {
-					syncErrorsCh <- "error for binary data with prompt " + v.GetPrompt() + ": " + err.Error()
-					continue
-				}
-				err = ks.stor.AddBinaryRecord(ctx, userLogin, v.GetPrompt(), v.GetData(), v.GetNote(), timeStamp)
-				if err != nil {
-					syncErrorsCh <- "error for binary data with prompt " + v.GetPrompt() + ": " + err.Error()
-				}
-				newBinaryRecords = slices.DeleteFunc(newBinaryRecords, func(b storage.BinaryRecord) bool {
-					return b.Prompt == v.GetPrompt()
+		for _, v := range in.GetBinaryRecords() {
+			timeStamp, err := time.Parse(time.RFC3339, v.GetTimeStamp())
+			if err != nil {
+				respErrors = append(respErrors, SyncErrInfo{
+					Text:  "error for binary data with prompt ",
+					Value: v.GetPrompt(),
+					Err:   err.Error(),
+				})
+				continue
+			}
+			err = ks.stor.AddBinaryRecord(ctx, userLogin, v.GetPrompt(), v.GetData(), v.GetNote(), timeStamp)
+			if err != nil {
+				respErrors = append(respErrors, SyncErrInfo{
+					Text:  "error for binary data with prompt ",
+					Value: v.GetPrompt(),
+					Err:   err.Error(),
 				})
 			}
-			wgSyncErrors.Done()
-		}()
+			newBinaryRecords = slices.DeleteFunc(newBinaryRecords, func(b storage.BinaryRecord) bool {
+				return slices.Compare(b.Prompt, v.GetPrompt()) == 0
+			})
+		}
 	}
-
-	wgSyncErrors.Wait()
 
 	respCards := make([]*pb.UserCard, 0, len(newCards))
 	for _, v := range newCards {
@@ -393,8 +412,17 @@ func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDat
 		})
 	}
 
+	errInfo := make([]*pb.SyncUserDataResponse_SyncErrorInfo, 0, len(respErrors))
+	for _, v := range respErrors {
+		errInfo = append(errInfo, &pb.SyncUserDataResponse_SyncErrorInfo{
+			Text:  v.Text,
+			Value: v.Value,
+			Err:   v.Err,
+		})
+	}
+
 	return &pb.SyncUserDataResponse{
-		SyncErrors:       respErrors,
+		SyncErrors:       errInfo,
 		NewLogins:        respLogins,
 		NewCards:         respCards,
 		NewTextRecords:   respText,
@@ -405,9 +433,14 @@ func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDat
 func (ks *KeeperGRPCServer) GetUserCard(ctx context.Context, in *pb.GetUserCardRequest) (*pb.GetUserCardResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	card, err := ks.stor.GetCard(ctx, userLogin, in.GetNumber())
 	if err != nil {
@@ -429,9 +462,14 @@ func (ks *KeeperGRPCServer) GetUserCard(ctx context.Context, in *pb.GetUserCardR
 func (ks *KeeperGRPCServer) GetUserLogin(ctx context.Context, in *pb.GetUserLoginRequest) (*pb.GetUserLoginResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	lg, err := ks.stor.GetLoginPwd(ctx, userLogin, in.GetPrompt(), in.GetLogin())
 	if err != nil {
@@ -452,9 +490,14 @@ func (ks *KeeperGRPCServer) GetUserLogin(ctx context.Context, in *pb.GetUserLogi
 func (ks *KeeperGRPCServer) GetUserText(ctx context.Context, in *pb.GetUserTextRequest) (*pb.GetUserTextResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	tr, err := ks.stor.GetTextRecord(ctx, userLogin, in.GetPrompt())
 	if err != nil {
@@ -474,16 +517,19 @@ func (ks *KeeperGRPCServer) GetUserText(ctx context.Context, in *pb.GetUserTextR
 func (ks *KeeperGRPCServer) GetUserBinary(ctx context.Context, in *pb.GetUserBinaryRequest) (*pb.GetUserBinaryResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	br, err := ks.stor.GetBinaryRecord(ctx, userLogin, in.GetPrompt())
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-
-	logger.ZapSugar.Info("br data ", br.Data)
 
 	return &pb.GetUserBinaryResponse{
 		BinaryRecord: &pb.UserBinaryRecord{
@@ -498,9 +544,14 @@ func (ks *KeeperGRPCServer) GetUserBinary(ctx context.Context, in *pb.GetUserBin
 func (ks *KeeperGRPCServer) ForceUpdateCard(ctx context.Context, in *pb.ForceUpdateCardRequest) (*pb.ForceUpdateCardResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if in.GetCard() == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
@@ -527,9 +578,14 @@ func (ks *KeeperGRPCServer) ForceUpdateCard(ctx context.Context, in *pb.ForceUpd
 func (ks *KeeperGRPCServer) ForceUpdateLoginPwd(ctx context.Context, in *pb.ForceUpdateLoginPwdRequest) (*pb.ForceUpdateLoginPwdResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if in.GetLoginPwd() == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
@@ -556,9 +612,14 @@ func (ks *KeeperGRPCServer) ForceUpdateLoginPwd(ctx context.Context, in *pb.Forc
 func (ks *KeeperGRPCServer) ForceUpdateTextRecord(ctx context.Context, in *pb.ForceUpdateTextRecordRequest) (*pb.ForceUpdateTextRecordResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if in.GetTextRecord() == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
@@ -584,9 +645,14 @@ func (ks *KeeperGRPCServer) ForceUpdateTextRecord(ctx context.Context, in *pb.Fo
 func (ks *KeeperGRPCServer) ForceUpdateBinaryRecord(ctx context.Context, in *pb.ForceUpdateBinaryRecordRequest) (*pb.ForceUpdateBinaryRecordResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
-		return nil, status.Error(codes.Unauthenticated, "missing user login")
+		return nil, status.Error(codes.Unauthenticated, "missing token")
 	}
-	userLogin := v.(string)
+	userToken := v.(string)
+
+	userLogin, err := authorizer.GetUserDataFromToken(userToken, ks.cfg.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if in.GetBinaryRecord() == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")

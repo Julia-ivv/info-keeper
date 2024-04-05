@@ -12,7 +12,7 @@ import (
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
-// HandlerWithAuth adds user authentication to the handler.
+// HandlerWithAuth adds user token to the handler.
 func HandlerWithAuth(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	if info.FullMethod == pb.InfoKeeper_AddUser_FullMethodName ||
 		info.FullMethod == pb.InfoKeeper_AuthUser_FullMethodName {
@@ -29,11 +29,8 @@ func HandlerWithAuth(ctx context.Context, req interface{}, info *grpc.UnaryServe
 	if len(token) == 0 {
 		return nil, status.Error(codes.Internal, "missing token")
 	}
-	userLogin, err := authorizer.GetUserDataFromToken(token)
-	if err != nil {
-		return nil, err
-	}
-	ctx = context.WithValue(ctx, authorizer.UserContextKey, userLogin)
+
+	ctx = context.WithValue(ctx, authorizer.UserContextKey, token)
 
 	return handler(ctx, req)
 }

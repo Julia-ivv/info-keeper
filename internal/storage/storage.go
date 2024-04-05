@@ -13,39 +13,39 @@ type Customer interface {
 }
 
 type CardWorker interface {
-	AddCard(ctx context.Context, userLogin string, prompt string,
-		number string, date string, code string, note string, timeStamp time.Time) (err error)
+	AddCard(ctx context.Context, userLogin string, prompt []byte,
+		number []byte, date []byte, code []byte, note []byte, timeStamp time.Time) (err error)
 	GetUserCardsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (cards []Card, err error)
-	GetCard(ctx context.Context, userLogin string, number string) (card Card, err error)
-	ForceUpdateCard(ctx context.Context, userLogin string, prompt string,
-		number string, date string, code string, note string, timeStamp time.Time) (err error)
+	GetCard(ctx context.Context, userLogin string, number []byte) (card Card, err error)
+	ForceUpdateCard(ctx context.Context, userLogin string, prompt []byte,
+		number []byte, date []byte, code []byte, note []byte, timeStamp time.Time) (err error)
 }
 
 type LoginPwdWorker interface {
-	AddLoginPwd(ctx context.Context, userLogin string, prompt string,
-		login string, pwd string, note string, timeStamp time.Time) (err error)
+	AddLoginPwd(ctx context.Context, userLogin string, prompt []byte,
+		login []byte, pwd []byte, note []byte, timeStamp time.Time) (err error)
 	GetUserLoginsPwdsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (loginsPwds []LoginPwd, err error)
-	GetLoginPwd(ctx context.Context, userLogin string, prompt string, login string) (loginPwd LoginPwd, err error)
-	ForceUpdateLoginPwd(ctx context.Context, userLogin string, prompt string,
-		login string, pwd string, note string, timeStamp time.Time) (err error)
+	GetLoginPwd(ctx context.Context, userLogin string, prompt []byte, login []byte) (loginPwd LoginPwd, err error)
+	ForceUpdateLoginPwd(ctx context.Context, userLogin string, prompt []byte,
+		login []byte, pwd []byte, note []byte, timeStamp time.Time) (err error)
 }
 
 type TextDataWorker interface {
-	AddTextRecord(ctx context.Context, userLogin string, prompt string,
-		data string, note string, timeStamp time.Time) (err error)
+	AddTextRecord(ctx context.Context, userLogin string, prompt []byte,
+		data []byte, note []byte, timeStamp time.Time) (err error)
 	GetUserTextRecordsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (records []TextRecord, err error)
-	GetTextRecord(ctx context.Context, userLogin string, prompt string) (record TextRecord, err error)
-	ForceUpdateTextRecord(ctx context.Context, userLogin string, prompt string,
-		data string, note string, timeStamp time.Time) (err error)
+	GetTextRecord(ctx context.Context, userLogin string, prompt []byte) (record TextRecord, err error)
+	ForceUpdateTextRecord(ctx context.Context, userLogin string, prompt []byte,
+		data []byte, note []byte, timeStamp time.Time) (err error)
 }
 
 type BinaryDataWorker interface {
-	AddBinaryRecord(ctx context.Context, userLogin string, prompt string,
-		data []byte, note string, timeStamp time.Time) (err error)
+	AddBinaryRecord(ctx context.Context, userLogin string, prompt []byte,
+		data []byte, note []byte, timeStamp time.Time) (err error)
 	GetUserBinaryRecordsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (records []BinaryRecord, err error)
-	GetBinaryRecord(ctx context.Context, userLogin string, prompt string) (record BinaryRecord, err error)
-	ForceUpdateBinaryRecord(ctx context.Context, userLogin string, prompt string,
-		data []byte, note string, timeStamp time.Time) (err error)
+	GetBinaryRecord(ctx context.Context, userLogin string, prompt []byte) (record BinaryRecord, err error)
+	ForceUpdateBinaryRecord(ctx context.Context, userLogin string, prompt []byte,
+		data []byte, note []byte, timeStamp time.Time) (err error)
 }
 
 type Repositorier interface {
