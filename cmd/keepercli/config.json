@@ -1,0 +1,5 @@
+{
+    "database_uri":"keeper.db",
+    "grpc":":3200",
+    "key":""
+}

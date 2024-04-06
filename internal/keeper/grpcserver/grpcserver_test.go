@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/Julia-ivv/info-keeper.git/internal/authorizer"
-	"github.com/Julia-ivv/info-keeper.git/internal/config"
-	"github.com/Julia-ivv/info-keeper.git/internal/mocks"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/config"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/mocks"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/storage"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
-	"github.com/Julia-ivv/info-keeper.git/internal/storage"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

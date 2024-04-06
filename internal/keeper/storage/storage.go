@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/Julia-ivv/info-keeper.git/internal/config"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/config"
 )
 
 type Customer interface {

@@ -8,16 +8,16 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/Julia-ivv/info-keeper.git/internal/config"
-	"github.com/Julia-ivv/info-keeper.git/internal/grpcserver"
-	"github.com/Julia-ivv/info-keeper.git/internal/interceptors"
+	kConfig "github.com/Julia-ivv/info-keeper.git/internal/keeper/config"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/grpcserver"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/interceptors"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/storage"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
-	"github.com/Julia-ivv/info-keeper.git/internal/storage"
 	"github.com/Julia-ivv/info-keeper.git/pkg/logger"
 )
 
 func main() {
-	cfg := config.NewConfig()
+	cfg := kConfig.NewConfig()
 
 	logger.ZapSugar = logger.NewLogger()
 	logger.ZapSugar.Infow("Starting gRPC server", "port", cfg.GRPC)

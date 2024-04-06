@@ -12,9 +12,9 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/Julia-ivv/info-keeper.git/internal/authorizer"
-	"github.com/Julia-ivv/info-keeper.git/internal/config"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/config"
+	"github.com/Julia-ivv/info-keeper.git/internal/keeper/storage"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
-	"github.com/Julia-ivv/info-keeper.git/internal/storage"
 )
 
 // ShortenerServer stores the repository and settings of this application.
