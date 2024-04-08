@@ -9,19 +9,11 @@ import (
 	"github.com/Julia-ivv/info-keeper.git/pkg/logger"
 )
 
-type CmdResult struct {
-	UserLogin  string
-	Prompt     string
-	Note       string
-	CardNumber string
-	CardDate   string
-	CardCode   string
-	Login      string
-	Text       string
-	Binary     string
+type DataPrinter interface {
+	PrintData()
 }
 
-var cmds = make(map[string]func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (res []CmdResult, err error))
+var cmds = make(map[string]func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error))
 
 func init() {
 	cmds[cmdparser.CmdReg] = regExec
@@ -59,13 +51,13 @@ func init() {
 	cmds[cmdparser.CmdGetBinaryServer] = getBinaryServerExec
 }
 
-func ExecuteCmd(userCmd string, userArgs cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (res []CmdResult, err error) {
+func ExecuteCmd(userCmd string, userArgs cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
 	fn := cmds[userCmd]
 	if fn == nil {
 		logger.ZapSugar.Infoln("command function not found")
 		return nil, errors.New("command function not found")
 	}
-	res, err = fn(userArgs, cl, repo)
+	res, err := fn(userArgs, cl, repo)
 	if err != nil {
 		return nil, err
 	}

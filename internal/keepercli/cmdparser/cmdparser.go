@@ -98,7 +98,7 @@ type Options struct {
 }
 
 type UserArgs struct {
-	UserLogin  string
+	AuthLogin  string
 	Prompt     string
 	Note       string
 	CardNumber string
@@ -128,11 +128,11 @@ func ParseUserCmd(c string) (cmdName string, args UserArgs, err error) {
 	switch {
 	case opt.Reg:
 		cmdName = CmdReg
-		args = UserArgs{UserLogin: opt.UserLogin}
+		args = UserArgs{AuthLogin: opt.UserLogin}
 		err = nil
 	case opt.Auth:
 		cmdName = CmdAuth
-		args = UserArgs{UserLogin: opt.UserLogin}
+		args = UserArgs{AuthLogin: opt.UserLogin}
 		err = nil
 
 	case opt.AddCard:
@@ -211,22 +211,19 @@ func ParseUserCmd(c string) (cmdName string, args UserArgs, err error) {
 
 	case opt.ForceAddCardServer:
 		cmdName = CmdForceAddCardServer
-		args = UserArgs{
-			Prompt: opt.Prompt, Note: opt.Note, CardNumber: opt.CardNumber,
-			CardDate: opt.CardDate, CardCode: opt.CardCode,
-		}
+		args = UserArgs{CardNumber: opt.CardNumber}
 		err = nil
 	case opt.ForceAddLoginServer:
 		cmdName = CmdForceAddLoginServer
-		args = UserArgs{Prompt: opt.Prompt, Note: opt.Note, Login: opt.Login}
+		args = UserArgs{Prompt: opt.Prompt, Login: opt.Login}
 		err = nil
 	case opt.ForceAddTextServer:
 		cmdName = CmdForceAddTextServer
-		args = UserArgs{Prompt: opt.Prompt, Note: opt.Note, Text: opt.Text}
+		args = UserArgs{Prompt: opt.Prompt}
 		err = nil
 	case opt.ForceAddBinaryServer:
 		cmdName = CmdForceAddBinaryServer
-		args = UserArgs{Prompt: opt.Prompt, Note: opt.Note, Binary: opt.Binary}
+		args = UserArgs{Prompt: opt.Prompt}
 		err = nil
 
 	case opt.GetCardServer:

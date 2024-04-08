@@ -39,7 +39,7 @@ func TestDecryptsByte(t *testing.T) {
 	bs := []byte{45, 45, 45}
 	d, e := EncryptsByte(bs)
 	if assert.NoError(t, e) {
-		s, err := DecryptsByte(d)
+		s, err := DecryptsInByte(d)
 		assert.NoError(t, err)
 		assert.Equal(t, bs, s)
 	}

@@ -37,7 +37,7 @@ func main() {
 	}
 	defer repo.Close()
 
-	conn, err := grpc.Dial(cfg.GRPC, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(cfg.GRPC, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,8 +59,7 @@ func main() {
 			if err != nil {
 				logger.ZapSugar.Infoln("can`t execute command ", userCmd, err)
 			}
-			// change
-			fmt.Println("res", res)
+			res.PrintData()
 		}
 	}
 }

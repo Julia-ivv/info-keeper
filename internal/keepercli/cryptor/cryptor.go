@@ -6,12 +6,10 @@ import (
 	"crypto/sha256"
 )
 
-const (
-	password = "x35k9fhrds45hf"
-)
+var UserKey []byte
 
 func generateNonce() (nonce []byte, aesgcm cipher.AEAD, err error) {
-	key := sha256.Sum256([]byte(password))
+	key := sha256.Sum256(UserKey)
 
 	aesblock, err := aes.NewCipher(key[:])
 	if err != nil {
@@ -60,7 +58,7 @@ func Decrypts(data []byte) (result string, err error) {
 	return string(res), nil
 }
 
-func DecryptsByte(data []byte) (result []byte, err error) {
+func DecryptsInByte(data []byte) (result []byte, err error) {
 	nonce, aesgcm, err := generateNonce()
 	if err != nil {
 		return nil, err
