@@ -2,11 +2,8 @@ package cmdparser
 
 import (
 	"errors"
-	"fmt"
 
 	flags "github.com/jessevdk/go-flags"
-
-	"github.com/Julia-ivv/info-keeper.git/pkg/logger"
 )
 
 type UserCommandName = string
@@ -49,8 +46,6 @@ const (
 )
 
 type Options struct {
-	Force bool `short:"f" long:"force" description:"use to add data to the server without verification"`
-
 	Reg  bool `long:"reg" description:"registration"`
 	Auth bool `long:"auth" description:"authentication"`
 
@@ -116,7 +111,6 @@ func ParseUserCmd(c string) (cmdName string, args UserArgs, err error) {
 	cSpl := splitCmd(c)
 
 	_, err = parser.ParseArgs(cSpl)
-	fmt.Println(opt)
 	if err != nil {
 		var fErr *flags.Error
 		if errors.As(err, &fErr) && fErr.Type == flags.ErrHelp {
@@ -249,7 +243,9 @@ func ParseUserCmd(c string) (cmdName string, args UserArgs, err error) {
 		err = nil
 
 	default:
-		logger.ZapSugar.Infoln("unclear command")
+		cmdName = ""
+		args = UserArgs{}
+		err = errors.New("unclear command")
 	}
 
 	clearOpt(&opt)

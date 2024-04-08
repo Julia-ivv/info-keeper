@@ -489,6 +489,9 @@ func (db *SQLiteStorage) AddCard(ctx context.Context, userLogin string, prompt [
 		`INSERT INTO cards (user_id , prompt, number, date, code, note, time_stamp) 
 				VALUES ((SELECT user_id FROM users WHERE login = ?),?,?,?,?,?,?)`,
 		userLogin, prompt, number, date, code, note, timeStamp)
+	if err != nil {
+		return err
+	}
 
 	rows, err := result.RowsAffected()
 	if err != nil {
@@ -510,6 +513,9 @@ func (db *SQLiteStorage) AddLoginPwd(ctx context.Context, userLogin string, prom
 		`INSERT INTO logins (user_id , prompt, login, pwd, note, time_stamp) 
 		VALUES ((SELECT user_id FROM users WHERE login = ?),?,?,?,?,?)`,
 		userLogin, prompt, login, pwd, note, timeStamp)
+	if err != nil {
+		return err
+	}
 
 	rows, err := result.RowsAffected()
 	if err != nil {
@@ -531,6 +537,9 @@ func (db *SQLiteStorage) AddTextRecord(ctx context.Context, userLogin string, pr
 		`INSERT INTO text_data (user_id , prompt, data, note, time_stamp) 
 		VALUES ((SELECT user_id FROM users WHERE login = ?),?,?,?,?)`,
 		userLogin, prompt, data, note, timeStamp)
+	if err != nil {
+		return err
+	}
 
 	rows, err := result.RowsAffected()
 	if err != nil {
@@ -552,6 +561,9 @@ func (db *SQLiteStorage) AddBinaryRecord(ctx context.Context, userLogin string, 
 		`INSERT INTO binary_data (user_id , prompt, data, note, time_stamp) 
 		VALUES ((SELECT user_id FROM users WHERE login = ?),?,?,?,?)`,
 		userLogin, prompt, data, note, timeStamp)
+	if err != nil {
+		return err
+	}
 
 	rows, err := result.RowsAffected()
 	if err != nil {

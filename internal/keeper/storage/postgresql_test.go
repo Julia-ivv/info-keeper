@@ -1428,7 +1428,7 @@ func TestGetUserLoginsPwdsAfterTime(t *testing.T) {
 	}
 }
 
-func TestGetUserTextRecords(t *testing.T) {
+func TestGetUserTextRecordsAfterTime(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("An error occurred while creating mock: %s", err)

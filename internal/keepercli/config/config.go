@@ -62,8 +62,8 @@ func NewConfig() *Flags {
 
 	flag.StringVar(&c.GRPC, "g", defGRPC, "gRPC port")
 	flag.StringVar(&c.DBURI, "d", "", "path to the database file")
-	flag.StringVar(&c.ConfigFileName, "c", "./config.json", "the name of configuration file")
-	flag.StringVar(&c.ConfigFileName, "config", "./config.json", "the name of configuration file")
+	flag.StringVar(&c.ConfigFileName, "c", "", "the name of configuration file")
+	flag.StringVar(&c.ConfigFileName, "config", "", "the name of configuration file")
 	flag.Parse()
 
 	env.Parse(c)

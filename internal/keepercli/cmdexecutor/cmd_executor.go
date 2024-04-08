@@ -6,7 +6,6 @@ import (
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/cmdparser"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/storage"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
-	"github.com/Julia-ivv/info-keeper.git/pkg/logger"
 )
 
 type DataPrinter interface {
@@ -54,7 +53,6 @@ func init() {
 func ExecuteCmd(userCmd string, userArgs cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
 	fn := cmds[userCmd]
 	if fn == nil {
-		logger.ZapSugar.Infoln("command function not found")
 		return nil, errors.New("command function not found")
 	}
 	res, err := fn(userArgs, cl, repo)

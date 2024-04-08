@@ -54,12 +54,16 @@ func main() {
 		userCmd, userArgs, err := cmdparser.ParseUserCmd(userInput)
 		if err != nil {
 			logger.ZapSugar.Infoln("can`t parse command ", userInput, err)
-		} else if userCmd != "" {
+		}
+		if userCmd != "" {
 			res, err := cmdexecutor.ExecuteCmd(userCmd, userArgs, cl, repo)
 			if err != nil {
 				logger.ZapSugar.Infoln("can`t execute command ", userCmd, err)
 			}
 			res.PrintData()
+		}
+		if userCmd == "" {
+			logger.ZapSugar.Infoln("unclear command")
 		}
 	}
 }

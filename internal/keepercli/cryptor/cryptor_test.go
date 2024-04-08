@@ -14,9 +14,9 @@ func TestGenerateNonce(t *testing.T) {
 }
 
 func TestEncryptsString(t *testing.T) {
-	b, err := EncryptsString("some data")
+	b, err := EncryptsString("byte")
 	assert.NoError(t, err)
-	assert.NotEmpty(t, b)
+	assert.Equal(t, []byte{19, 82, 230, 117, 221, 110, 161, 236, 11, 24, 168, 191, 253, 202, 73, 174, 150, 231, 168, 212}, b)
 }
 
 func TestEncryptsByte(t *testing.T) {

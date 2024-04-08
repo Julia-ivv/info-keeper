@@ -23,7 +23,6 @@ func clearOpt(opt *Options) error {
 	opt.CardDate = ""
 	opt.CardNumber = ""
 	opt.Exit = false
-	opt.Force = false
 	opt.ForceAddBinaryServer = false
 	opt.ForceAddCardServer = false
 	opt.ForceAddLoginServer = false
