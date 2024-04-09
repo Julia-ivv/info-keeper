@@ -6,13 +6,14 @@ import (
 	"os"
 	"time"
 
+	"gitlab.com/david_mbuvi/go_asterisks"
+	"google.golang.org/grpc/metadata"
+
 	"github.com/Julia-ivv/info-keeper.git/internal/authorizer"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/cmdparser"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/cryptor"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/storage"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
-	"gitlab.com/david_mbuvi/go_asterisks"
-	"google.golang.org/grpc/metadata"
 )
 
 type UserLoginPwd struct {

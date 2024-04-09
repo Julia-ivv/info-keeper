@@ -3,10 +3,11 @@ package cmdexecutor
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/cmdparser"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/storage"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
-	"github.com/stretchr/testify/assert"
 )
 
 var (

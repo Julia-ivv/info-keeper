@@ -7,8 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Julia-ivv/info-keeper.git/pkg/randomizer"
 	_ "modernc.org/sqlite"
+
+	"github.com/Julia-ivv/info-keeper.git/pkg/randomizer"
 )
 
 type SQLiteStorage struct {

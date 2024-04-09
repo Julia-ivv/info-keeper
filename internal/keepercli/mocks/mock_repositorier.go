@@ -8,8 +8,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	storage "github.com/Julia-ivv/info-keeper.git/internal/keepercli/storage"
 	gomock "github.com/golang/mock/gomock"
+
+	storage "github.com/Julia-ivv/info-keeper.git/internal/keepercli/storage"
 )
 
 // MockRepositorier is a mock of Repositorier interface.

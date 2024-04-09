@@ -7,8 +7,9 @@ import (
 	"flag"
 	"os"
 
-	"github.com/Julia-ivv/info-keeper.git/pkg/logger"
 	"github.com/caarlos0/env"
+
+	"github.com/Julia-ivv/info-keeper.git/pkg/logger"
 )
 
 // Flags stores application launch settings.

@@ -9,8 +9,9 @@ import (
 	reflect "reflect"
 	time "time"
 
-	storage "github.com/Julia-ivv/info-keeper.git/internal/keeper/storage"
 	gomock "github.com/golang/mock/gomock"
+
+	storage "github.com/Julia-ivv/info-keeper.git/internal/keeper/storage"
 )
 
 // MockRepositorier is a mock of Repositorier interface.

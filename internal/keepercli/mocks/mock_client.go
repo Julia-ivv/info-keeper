@@ -8,9 +8,10 @@ import (
 	context "context"
 	reflect "reflect"
 
-	proto "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 	gomock "github.com/golang/mock/gomock"
 	grpc "google.golang.org/grpc"
+
+	proto "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
 // MockInfoKeeperClient is a mock of InfoKeeperClient interface.

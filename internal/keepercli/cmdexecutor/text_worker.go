@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
 	"github.com/Julia-ivv/info-keeper.git/internal/authorizer"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/cmdparser"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/cryptor"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/storage"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
-	"google.golang.org/grpc/metadata"
 )
 
 type UserTextRecord struct {

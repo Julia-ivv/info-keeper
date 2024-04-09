@@ -5,14 +5,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc/metadata"
+
 	"github.com/Julia-ivv/info-keeper.git/internal/authorizer"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/cmdparser"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/mocks"
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/storage"
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"google.golang.org/grpc/metadata"
 )
 
 var (
