@@ -16,6 +16,14 @@ import (
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
+type Ver string
+
+func (v Ver) PrintData() {
+	fmt.Println(appVersion)
+}
+
+var appVersion Ver = "v1.0.0 2024.04.09"
+
 var UserToken string
 var UserLogin string
 
@@ -177,4 +185,8 @@ var exitExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storag
 	}
 	os.Exit(0)
 	return nil, nil
+}
+
+var verExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
+	return appVersion, nil
 }

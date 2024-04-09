@@ -18,6 +18,7 @@ func init() {
 	cmds[cmdparser.CmdReg] = regExec
 	cmds[cmdparser.CmdAuth] = authExec
 	cmds[cmdparser.CmdExit] = exitExec
+	cmds[cmdparser.CmdVer] = verExec
 
 	cmds[cmdparser.CmdAddCard] = addCardExec
 	cmds[cmdparser.CmdAddLogin] = addLoginExec

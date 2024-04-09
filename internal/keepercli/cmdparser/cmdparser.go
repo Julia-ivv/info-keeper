@@ -43,11 +43,12 @@ const (
 	CmdGetBinaryServer UserCommandName = "getBinaryServer"
 
 	CmdExit UserCommandName = "syncExit"
+	CmdVer  UserCommandName = "version"
 )
 
 type Options struct {
-	Reg  bool `long:"reg" description:"registration"`
-	Auth bool `long:"auth" description:"authentication"`
+	Reg  bool `long:"reg" description:"registration a new user"`
+	Auth bool `long:"auth" description:"user authentication"`
 
 	AddCard   bool `long:"ncard" description:"add new card"`
 	AddLogin  bool `long:"npwd" description:"add new pair login-password"`
@@ -87,9 +88,10 @@ type Options struct {
 	CardDate   string `short:"e" long:"date" description:"card expiry date"`
 	CardCode   string `short:"v" long:"code" description:"card code"`
 	Text       string `short:"t" long:"text" description:"text data"`
-	Binary     string `short:"b" long:"byte" description:"binary data"`
+	Binary     string `short:"b" long:"byte" description:"path to the data file"`
 
-	Exit bool `short:"x" long:"exit" description:"sync and exit"`
+	Exit bool `short:"x" long:"exit" description:"synchronization and exit"`
+	Ver  bool `long:"version" description:"version and build date"`
 }
 
 type UserArgs struct {
@@ -240,6 +242,10 @@ func ParseUserCmd(c string) (cmdName string, args UserArgs, err error) {
 
 	case opt.Exit:
 		cmdName = CmdExit
+		args = UserArgs{}
+		err = nil
+	case opt.Ver:
+		cmdName = CmdVer
 		args = UserArgs{}
 		err = nil
 

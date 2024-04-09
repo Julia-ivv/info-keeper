@@ -231,6 +231,13 @@ func TestParseUserCmd(t *testing.T) {
 			wantArgs: UserArgs{},
 			wantErr:  true,
 		},
+		{
+			name:     "ver",
+			c:        "--version",
+			wantCmd:  CmdVer,
+			wantArgs: UserArgs{},
+			wantErr:  false,
+		},
 	}
 
 	for _, tt := range tests {
