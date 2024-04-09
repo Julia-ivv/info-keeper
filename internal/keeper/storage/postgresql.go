@@ -89,6 +89,7 @@ func createTables(ctx context.Context, db *sql.DB) (err error) {
 	return nil
 }
 
+// NewDBStorage создает объект для работы с БД.
 func NewDBStorage(DBURI string) (*DBStorage, error) {
 	db, err := sql.Open("pgx", DBURI)
 	if err != nil {
@@ -106,10 +107,12 @@ func NewDBStorage(DBURI string) (*DBStorage, error) {
 	return &DBStorage{dbHandle: db}, nil
 }
 
+// Close закрывает БД.
 func (db *DBStorage) Close() error {
 	return db.dbHandle.Close()
 }
 
+// RegUser добавляет нового пользователя в БД.
 func (db *DBStorage) RegUser(ctx context.Context, login string, pwd string) error {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -135,6 +138,7 @@ func (db *DBStorage) RegUser(ctx context.Context, login string, pwd string) erro
 	return nil
 }
 
+// AuthUser аутентифицирует пользователя.
 func (db *DBStorage) AuthUser(ctx context.Context, login string, pwd string) error {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -156,6 +160,7 @@ func (db *DBStorage) AuthUser(ctx context.Context, login string, pwd string) err
 	return nil
 }
 
+// AddCard добавляет информацию о банковской карте.
 func (db *DBStorage) AddCard(ctx context.Context, userLogin string, prompt []byte,
 	number []byte, date []byte, code []byte, note []byte, timeStamp time.Time) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -215,6 +220,7 @@ func (db *DBStorage) AddCard(ctx context.Context, userLogin string, prompt []byt
 	return nil
 }
 
+// AddLoginPwd добавляет информацию о паре логин-пароль.
 func (db *DBStorage) AddLoginPwd(ctx context.Context, userLogin string, prompt []byte,
 	login []byte, pwd []byte, note []byte, timeStamp time.Time) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -278,6 +284,7 @@ func (db *DBStorage) AddLoginPwd(ctx context.Context, userLogin string, prompt [
 	return nil
 }
 
+// AddTextRecord раелизует добавление текстовой информации.
 func (db *DBStorage) AddTextRecord(ctx context.Context, userLogin string, prompt []byte,
 	data []byte, note []byte, timeStamp time.Time) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -338,6 +345,7 @@ func (db *DBStorage) AddTextRecord(ctx context.Context, userLogin string, prompt
 	return nil
 }
 
+// AddBinaryRecord реализует добавление бинарной информации в БД.
 func (db *DBStorage) AddBinaryRecord(ctx context.Context, userLogin string, prompt []byte,
 	data []byte, note []byte, timeStamp time.Time) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -398,6 +406,7 @@ func (db *DBStorage) AddBinaryRecord(ctx context.Context, userLogin string, prom
 	return nil
 }
 
+// Card хранит информацию о банковской карте.
 type Card struct {
 	Prompt    []byte
 	Number    []byte
@@ -407,6 +416,7 @@ type Card struct {
 	TimeStamp time.Time
 }
 
+// GetCard получает информацию о банковской карте.
 func (db *DBStorage) GetCard(ctx context.Context, userLogin string, number []byte) (card Card, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -434,6 +444,8 @@ func (db *DBStorage) GetCard(ctx context.Context, userLogin string, number []byt
 	}, nil
 }
 
+// GetUserCardsAfterTime - получает все банковские карты пользователя,
+// добавленные или измененные после указанного времени.
 func (db *DBStorage) GetUserCardsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (cards []Card, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -473,6 +485,7 @@ func (db *DBStorage) GetUserCardsAfterTime(ctx context.Context, userLogin string
 	return cards, nil
 }
 
+// LoginPwd хранит информацию о парах логин-пароль.
 type LoginPwd struct {
 	Prompt    []byte
 	Login     []byte
@@ -481,6 +494,7 @@ type LoginPwd struct {
 	TimeStamp time.Time
 }
 
+// GetLoginPwd получает информацию о паре логин-пароль.
 func (db *DBStorage) GetLoginPwd(ctx context.Context, userLogin string, prompt []byte, login []byte) (loginPwd LoginPwd, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -507,6 +521,8 @@ func (db *DBStorage) GetLoginPwd(ctx context.Context, userLogin string, prompt [
 	}, nil
 }
 
+// GetUserLoginsPwdsAfterTime получает информацию о парах логин-пароль пользователя,
+// добавленных или измененных после указанного времени.
 func (db *DBStorage) GetUserLoginsPwdsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (loginsPwds []LoginPwd, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -545,6 +561,7 @@ func (db *DBStorage) GetUserLoginsPwdsAfterTime(ctx context.Context, userLogin s
 	return loginsPwds, nil
 }
 
+// TextRecord хранит текстовую информацию.
 type TextRecord struct {
 	Prompt    []byte
 	Data      []byte
@@ -552,6 +569,7 @@ type TextRecord struct {
 	TimeStamp time.Time
 }
 
+// GetTextRecord получает текстовую информацию.
 func (db *DBStorage) GetTextRecord(ctx context.Context, userLogin string, prompt []byte) (record TextRecord, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -577,6 +595,8 @@ func (db *DBStorage) GetTextRecord(ctx context.Context, userLogin string, prompt
 	}, nil
 }
 
+// GetUserTextRecordsAfterTime получает все текстовые данные пользователя,
+// добавленные или измененнные после указанного времени.
 func (db *DBStorage) GetUserTextRecordsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (records []TextRecord, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -613,6 +633,7 @@ func (db *DBStorage) GetUserTextRecordsAfterTime(ctx context.Context, userLogin 
 	return records, nil
 }
 
+// BinaryRecord хранит бинарные данные.
 type BinaryRecord struct {
 	Prompt    []byte
 	Data      []byte
@@ -620,6 +641,7 @@ type BinaryRecord struct {
 	TimeStamp time.Time
 }
 
+// GetBinaryRecord получает бинарные данные.
 func (db *DBStorage) GetBinaryRecord(ctx context.Context, userLogin string, prompt []byte) (record BinaryRecord, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -645,6 +667,8 @@ func (db *DBStorage) GetBinaryRecord(ctx context.Context, userLogin string, prom
 	}, nil
 }
 
+// GetUserBinaryRecordsAfterTime получает все бинарные данные пользователя,
+// добавленные или измененные после указанного времени.
 func (db *DBStorage) GetUserBinaryRecordsAfterTime(ctx context.Context, userLogin string, afterTime time.Time) (records []BinaryRecord, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -681,6 +705,7 @@ func (db *DBStorage) GetUserBinaryRecordsAfterTime(ctx context.Context, userLogi
 	return records, nil
 }
 
+// ForceUpdateCard обновляет информацию о банковской карте.
 func (db *DBStorage) ForceUpdateCard(ctx context.Context, userLogin string, prompt []byte,
 	number []byte, date []byte, code []byte, note []byte, timeStamp time.Time) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -705,6 +730,7 @@ func (db *DBStorage) ForceUpdateCard(ctx context.Context, userLogin string, prom
 	return nil
 }
 
+// ForceUpdateLoginPwd обновляет информацию о паре логин-пароль.
 func (db *DBStorage) ForceUpdateLoginPwd(ctx context.Context, userLogin string, prompt []byte,
 	login []byte, pwd []byte, note []byte, timeStamp time.Time) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -730,6 +756,7 @@ func (db *DBStorage) ForceUpdateLoginPwd(ctx context.Context, userLogin string, 
 	return nil
 }
 
+// ForceUpdateTextRecord обновляет текстовую информацию.
 func (db *DBStorage) ForceUpdateTextRecord(ctx context.Context, userLogin string, prompt []byte,
 	data []byte, note []byte, timeStamp time.Time) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -754,6 +781,7 @@ func (db *DBStorage) ForceUpdateTextRecord(ctx context.Context, userLogin string
 	return nil
 }
 
+// ForceUpdateBinaryRecord обновляет бинарные данные.
 func (db *DBStorage) ForceUpdateBinaryRecord(ctx context.Context, userLogin string, prompt []byte,
 	data []byte, note []byte, timeStamp time.Time) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)

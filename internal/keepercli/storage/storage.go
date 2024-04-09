@@ -6,11 +6,13 @@ import (
 	"github.com/Julia-ivv/info-keeper.git/internal/keepercli/config"
 )
 
+// Customer интерфейс для работы с пользователем.
 type Customer interface {
 	RegUser(ctx context.Context, login string, pwd string) error
 	AuthUser(ctx context.Context, login string, pwd string) error
 }
 
+// Synchronizer интерфейс для выполнения синхронизации.
 type Synchronizer interface {
 	GetLastSyncTime(ctx context.Context, userLogin string) (lastSync string, err error)
 	AddSyncData(ctx context.Context, userLogin string,
@@ -18,6 +20,7 @@ type Synchronizer interface {
 	UpdateLastSyncTime(ctx context.Context, userLogin string, syncTime string) (err error)
 }
 
+// CardWorker интерфейс для работы с банковскими картами.
 type CardWorker interface {
 	GetUserCardsAfterTime(ctx context.Context, userLogin string, afterTime string) (cards []Card, err error)
 	AddCard(ctx context.Context, userLogin string, prompt []byte, number []byte, date []byte,
@@ -27,6 +30,7 @@ type CardWorker interface {
 		code []byte, note []byte, timeStamp string) (err error)
 }
 
+// LoginPwdWorker интерфейс для работы с парами логин-пароль.
 type LoginPwdWorker interface {
 	GetUserLoginsPwdsAfterTime(ctx context.Context, userLogin string, afterTime string) (loginsPwds []LoginPwd, err error)
 	AddLoginPwd(ctx context.Context, userLogin string, prompt []byte, login []byte, pwd []byte,
@@ -36,6 +40,7 @@ type LoginPwdWorker interface {
 		pwd []byte, note []byte, timeStamp string) (err error)
 }
 
+// TextDataWorker интерфейс для работы с текстовыми данными.
 type TextDataWorker interface {
 	GetUserTextRecordsAfterTime(ctx context.Context, userLogin string, afterTime string) (records []TextRecord, err error)
 	AddTextRecord(ctx context.Context, userLogin string, prompt []byte, data []byte,
@@ -45,6 +50,7 @@ type TextDataWorker interface {
 		note []byte, timeStamp string) (err error)
 }
 
+// BinaryDataWorker интерфейс для работы с бинарными данными.
 type BinaryDataWorker interface {
 	GetUserBinaryRecordsAfterTime(ctx context.Context, userLogin string, afterTime string) (records []BinaryRecord, err error)
 	AddBinaryRecord(ctx context.Context, userLogin string, prompt []byte, data []byte,
@@ -54,6 +60,7 @@ type BinaryDataWorker interface {
 		note []byte, timeStamp string) (err error)
 }
 
+// Repositorier интерфейс для работы с репозиторием.
 type Repositorier interface {
 	Close() error
 	Customer
@@ -64,6 +71,7 @@ type Repositorier interface {
 	BinaryDataWorker
 }
 
+// NewStorage создает новый объект репозитория.
 func NewStorage(cfg config.Flags) (Repositorier, error) {
 	db, err := NewSQLiteStorage(cfg.DBURI)
 	if err != nil {

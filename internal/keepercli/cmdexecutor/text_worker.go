@@ -14,14 +14,18 @@ import (
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
+// UserTextRecord хранит текстовые данные.
 type UserTextRecord struct {
 	Prompt    string
 	Data      string
 	Note      string
 	TimeStamp string
 }
+
+// TextRecords используется для вывода результата пользователю.
 type TextRecords []UserTextRecord
 
+// PrintData используется для вывода результата пользователю.
 func (t TextRecords) PrintData() {
 	fmt.Println("TEXT RECORD")
 	for _, v := range t {

@@ -15,6 +15,7 @@ import (
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
+// UserBinaryRecord хранит бинарные данные.
 type UserBinaryRecord struct {
 	Prompt    string
 	Data      []byte
@@ -23,8 +24,10 @@ type UserBinaryRecord struct {
 	TimeStamp string
 }
 
+// BinaryRecords используется для вывода результата пользователю.
 type BinaryRecords []UserBinaryRecord
 
+// PrintData используется для вывода результата пользователю.
 func (b BinaryRecords) PrintData() {
 	fmt.Println("BINARY RECORD")
 	for _, v := range b {

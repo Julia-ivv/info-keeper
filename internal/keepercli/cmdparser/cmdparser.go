@@ -1,3 +1,4 @@
+// Пакет cmdparser реализацию парсинга команды пользователя.
 package cmdparser
 
 import (
@@ -6,6 +7,7 @@ import (
 	flags "github.com/jessevdk/go-flags"
 )
 
+// UserCommandName команда пользователя
 type UserCommandName = string
 
 const (
@@ -46,6 +48,8 @@ const (
 	CmdVer  UserCommandName = "version"
 )
 
+// Options структура для парсинга команды пользователя.
+// Содержит значения введенных флагов.
 type Options struct {
 	Reg  bool `long:"reg" description:"registration a new user"`
 	Auth bool `long:"auth" description:"user authentication"`
@@ -94,6 +98,7 @@ type Options struct {
 	Ver  bool `long:"version" description:"version and build date"`
 }
 
+// UserArgs хранит значения, введенные пользователем.
 type UserArgs struct {
 	AuthLogin  string
 	Prompt     string
@@ -110,6 +115,7 @@ type UserArgs struct {
 var opt Options
 var parser = flags.NewParser(&opt, flags.Default)
 
+// ParseUserCmd парсит команду пользователя.
 func ParseUserCmd(c string) (cmdName string, args UserArgs, err error) {
 	cSpl := splitCmd(c)
 

@@ -51,6 +51,7 @@ func init() {
 	cmds[cmdparser.CmdGetBinaryServer] = getBinaryServerExec
 }
 
+// ExecuteCmd выполняет поиск и вызов функции по команде пользователя.
 func ExecuteCmd(userCmd string, userArgs cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
 	fn := cmds[userCmd]
 	if fn == nil {

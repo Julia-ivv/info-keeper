@@ -7,11 +7,13 @@ import (
 	"github.com/Julia-ivv/info-keeper.git/internal/keeper/config"
 )
 
+// Customer интерфейс для работы с пользователем.
 type Customer interface {
 	RegUser(ctx context.Context, login string, pwd string) error
 	AuthUser(ctx context.Context, login string, pwd string) error
 }
 
+// CardWorker интерфейс для работы с банковскими картами.
 type CardWorker interface {
 	AddCard(ctx context.Context, userLogin string, prompt []byte,
 		number []byte, date []byte, code []byte, note []byte, timeStamp time.Time) (err error)
@@ -21,6 +23,7 @@ type CardWorker interface {
 		number []byte, date []byte, code []byte, note []byte, timeStamp time.Time) (err error)
 }
 
+// LoginPwdWorker интерфейс для работы с парами логин-пароль.
 type LoginPwdWorker interface {
 	AddLoginPwd(ctx context.Context, userLogin string, prompt []byte,
 		login []byte, pwd []byte, note []byte, timeStamp time.Time) (err error)
@@ -30,6 +33,7 @@ type LoginPwdWorker interface {
 		login []byte, pwd []byte, note []byte, timeStamp time.Time) (err error)
 }
 
+// TextDataWorker интерфейс для работы с текстовыми данными.
 type TextDataWorker interface {
 	AddTextRecord(ctx context.Context, userLogin string, prompt []byte,
 		data []byte, note []byte, timeStamp time.Time) (err error)
@@ -39,6 +43,7 @@ type TextDataWorker interface {
 		data []byte, note []byte, timeStamp time.Time) (err error)
 }
 
+// BinaryDataWorker интерфейс для работы с бинарными данными.
 type BinaryDataWorker interface {
 	AddBinaryRecord(ctx context.Context, userLogin string, prompt []byte,
 		data []byte, note []byte, timeStamp time.Time) (err error)
@@ -48,6 +53,7 @@ type BinaryDataWorker interface {
 		data []byte, note []byte, timeStamp time.Time) (err error)
 }
 
+// Repositorier интерфейс для работы с репозиторием.
 type Repositorier interface {
 	Close() error
 	Customer
@@ -57,6 +63,7 @@ type Repositorier interface {
 	BinaryDataWorker
 }
 
+// NewStorage создает новый объект репозитория.
 func NewStorage(cfg config.Flags) (Repositorier, error) {
 	db, err := NewDBStorage(cfg.DBDSN)
 	if err != nil {

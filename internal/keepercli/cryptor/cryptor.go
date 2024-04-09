@@ -1,3 +1,4 @@
+// Пакет cryptor используется для шифрования данных.
 package cryptor
 
 import (
@@ -24,6 +25,7 @@ func generateNonce() (nonce []byte, aesgcm cipher.AEAD, err error) {
 	return key[len(key)-aesgcm.NonceSize():], aesgcm, nil
 }
 
+// EncryptsString шифрует текстовые данные.
 func EncryptsString(data string) (result []byte, err error) {
 	nonce, aesgcm, err := generateNonce()
 	if err != nil {
@@ -34,6 +36,7 @@ func EncryptsString(data string) (result []byte, err error) {
 	return res, nil
 }
 
+// EncryptsByte шифрует бинарные данные.
 func EncryptsByte(data []byte) (result []byte, err error) {
 	nonce, aesgcm, err := generateNonce()
 	if err != nil {
@@ -44,6 +47,7 @@ func EncryptsByte(data []byte) (result []byte, err error) {
 	return res, nil
 }
 
+// Decrypts дешифрует данные в текст.
 func Decrypts(data []byte) (result string, err error) {
 	nonce, aesgcm, err := generateNonce()
 	if err != nil {
@@ -58,6 +62,7 @@ func Decrypts(data []byte) (result string, err error) {
 	return string(res), nil
 }
 
+// DecryptsInByte дешифрует данные в байты.
 func DecryptsInByte(data []byte) (result []byte, err error) {
 	nonce, aesgcm, err := generateNonce()
 	if err != nil {

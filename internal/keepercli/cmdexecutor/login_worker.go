@@ -16,6 +16,7 @@ import (
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
+// UserLoginPwd хранит данные о паре логин-пароль.
 type UserLoginPwd struct {
 	Prompt    string
 	Login     string
@@ -23,8 +24,11 @@ type UserLoginPwd struct {
 	Note      string
 	TimeStamp string
 }
+
+// LoginPwds используется для вывода результата пользователю.
 type LoginPwds []UserLoginPwd
 
+// PrintData используется для вывода результата пользователю.
 func (l LoginPwds) PrintData() {
 	fmt.Println("LOGIN PASSWORD")
 	for _, v := range l {

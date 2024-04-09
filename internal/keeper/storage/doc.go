@@ -1,2 +1,2 @@
-// Package storage contains an implementation of storage for this application.
+// Пакет storage содержит реализацию хранилища для сервера.
 package storage

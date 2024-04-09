@@ -1,3 +1,4 @@
+// Пакет grpcserver реализует gRPC-методы.
 package grpcserver
 
 import (
@@ -17,14 +18,14 @@ import (
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
-// ShortenerServer stores the repository and settings of this application.
+// ShortenerServer хранит репозиторий и настройки приложения.
 type KeeperGRPCServer struct {
 	pb.UnimplementedInfoKeeperServer
 	stor storage.Repositorier
 	cfg  config.Flags
 }
 
-// NewShortenerServer creates an instance with storage and settings for grpc methods.
+// NewShortenerServer создает объект с репозиторием и настройками для gRPC-методов.
 func NewKeeperServer(stor storage.Repositorier, cfg config.Flags) *KeeperGRPCServer {
 	k := &KeeperGRPCServer{}
 	k.stor = stor
@@ -32,6 +33,7 @@ func NewKeeperServer(stor storage.Repositorier, cfg config.Flags) *KeeperGRPCSer
 	return k
 }
 
+// AddUser реализует добавление и аутентификацию пользователя в БД.
 func (ks *KeeperGRPCServer) AddUser(ctx context.Context, in *pb.AddUserRequest) (*pb.AddUserResponse, error) {
 	if in.GetLogin() == "" || in.GetPwd() == "" {
 		return nil, status.Error(codes.DataLoss, "empty login or password")
@@ -63,6 +65,7 @@ func (ks *KeeperGRPCServer) AddUser(ctx context.Context, in *pb.AddUserRequest) 
 	return &pb.AddUserResponse{Token: tokenString}, nil
 }
 
+// AuthUser - аутентификация существующего пользователя.
 func (ks *KeeperGRPCServer) AuthUser(ctx context.Context, in *pb.AuthUserRequest) (*pb.AuthUserResponse, error) {
 	if in.GetLogin() == "" || in.GetPwd() == "" {
 		return nil, status.Error(codes.DataLoss, "empty login or password")
@@ -85,6 +88,7 @@ func (ks *KeeperGRPCServer) AuthUser(ctx context.Context, in *pb.AuthUserRequest
 	return &pb.AuthUserResponse{Token: tokenString}, nil
 }
 
+// AddCard реализует добавление информации о банковской карте.
 func (ks *KeeperGRPCServer) AddCard(ctx context.Context, in *pb.AddCardRequest) (*pb.AddCardResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -121,6 +125,7 @@ func (ks *KeeperGRPCServer) AddCard(ctx context.Context, in *pb.AddCardRequest) 
 	return nil, nil
 }
 
+// AddLogin реализует добавление пары логин - пароль в БД.
 func (ks *KeeperGRPCServer) AddLogin(ctx context.Context, in *pb.AddLoginRequest) (*pb.AddLoginResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -156,6 +161,7 @@ func (ks *KeeperGRPCServer) AddLogin(ctx context.Context, in *pb.AddLoginRequest
 	return nil, nil
 }
 
+// AddTextData - раелизует добавление текстовой информации.
 func (ks *KeeperGRPCServer) AddTextData(ctx context.Context, in *pb.AddTextDataRequest) (*pb.AddTextDataResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -191,6 +197,7 @@ func (ks *KeeperGRPCServer) AddTextData(ctx context.Context, in *pb.AddTextDataR
 	return nil, nil
 }
 
+// AddBinaryData реализует добавление бинарной информации в БД.
 func (ks *KeeperGRPCServer) AddBinaryData(ctx context.Context, in *pb.AddBinaryDataRequest) (*pb.AddBinaryDataResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -227,12 +234,14 @@ func (ks *KeeperGRPCServer) AddBinaryData(ctx context.Context, in *pb.AddBinaryD
 	return nil, nil
 }
 
+// SyncErrInfo - содержит информацию об ошибках при синхронизации.
 type SyncErrInfo struct {
 	Text  string
 	Value []byte
 	Err   string
 }
 
+// SyncUserData выполняет синхронизацию данных между сервером и клиентом.
 func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDataRequest) (*pb.SyncUserDataResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -430,6 +439,7 @@ func (ks *KeeperGRPCServer) SyncUserData(ctx context.Context, in *pb.SyncUserDat
 	}, nil
 }
 
+// GetUserCard реализует получение информации о банковской карте.
 func (ks *KeeperGRPCServer) GetUserCard(ctx context.Context, in *pb.GetUserCardRequest) (*pb.GetUserCardResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -459,6 +469,7 @@ func (ks *KeeperGRPCServer) GetUserCard(ctx context.Context, in *pb.GetUserCardR
 	}, nil
 }
 
+// GetUserLogin - получает информацию о паре логин-пароль из БД.
 func (ks *KeeperGRPCServer) GetUserLogin(ctx context.Context, in *pb.GetUserLoginRequest) (*pb.GetUserLoginResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -487,6 +498,7 @@ func (ks *KeeperGRPCServer) GetUserLogin(ctx context.Context, in *pb.GetUserLogi
 	}, nil
 }
 
+// GetUserText - получает текстовую информацию из БД.
 func (ks *KeeperGRPCServer) GetUserText(ctx context.Context, in *pb.GetUserTextRequest) (*pb.GetUserTextResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -514,6 +526,7 @@ func (ks *KeeperGRPCServer) GetUserText(ctx context.Context, in *pb.GetUserTextR
 	}, nil
 }
 
+// GetUserBinary - получает бинарную информацию из БД.
 func (ks *KeeperGRPCServer) GetUserBinary(ctx context.Context, in *pb.GetUserBinaryRequest) (*pb.GetUserBinaryResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -541,6 +554,7 @@ func (ks *KeeperGRPCServer) GetUserBinary(ctx context.Context, in *pb.GetUserBin
 	}, nil
 }
 
+// ForceUpdateCard - обновляет информацию о банковской карте.
 func (ks *KeeperGRPCServer) ForceUpdateCard(ctx context.Context, in *pb.ForceUpdateCardRequest) (*pb.ForceUpdateCardResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -575,6 +589,7 @@ func (ks *KeeperGRPCServer) ForceUpdateCard(ctx context.Context, in *pb.ForceUpd
 	return nil, nil
 }
 
+// ForceUpdateLoginPwd - обновляет информацию о паре логин-пароль.
 func (ks *KeeperGRPCServer) ForceUpdateLoginPwd(ctx context.Context, in *pb.ForceUpdateLoginPwdRequest) (*pb.ForceUpdateLoginPwdResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -609,6 +624,7 @@ func (ks *KeeperGRPCServer) ForceUpdateLoginPwd(ctx context.Context, in *pb.Forc
 	return nil, nil
 }
 
+// ForceUpdateTextRecord - обновляет текстовую информацию.
 func (ks *KeeperGRPCServer) ForceUpdateTextRecord(ctx context.Context, in *pb.ForceUpdateTextRecordRequest) (*pb.ForceUpdateTextRecordResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {
@@ -642,6 +658,7 @@ func (ks *KeeperGRPCServer) ForceUpdateTextRecord(ctx context.Context, in *pb.Fo
 	return nil, nil
 }
 
+// ForceUpdateBinaryRecord - обновляет бинарную информацию в БД.
 func (ks *KeeperGRPCServer) ForceUpdateBinaryRecord(ctx context.Context, in *pb.ForceUpdateBinaryRecordRequest) (*pb.ForceUpdateBinaryRecordResponse, error) {
 	v := ctx.Value(authorizer.UserContextKey)
 	if v == nil {

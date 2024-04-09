@@ -1,4 +1,4 @@
-// Package config receives settings when the application starts.
+// Пакет config получает настройки при запуске приложения.
 package config
 
 import (
@@ -12,18 +12,18 @@ import (
 	"github.com/Julia-ivv/info-keeper.git/pkg/logger"
 )
 
-// Flags stores application launch settings.
+// Flags хранит настройки приложения.
 type Flags struct {
-	// GRPC (flag -g) - port for gRPC, e.g. :3200.
+	// GRPC (флаг -g) - порт для gRPC, например :3200.
 	GRPC string `env:"GRPC_PORT" json:"grpc"`
-	// URL (flag -b) - the base address of the resulting shortened URL, e.g.  http://localhost:8080.
+	// DBDSN (флаг -d) - имя для доступа к БД.
 	DBDSN string `env:"DATABASE_DSN" json:"database_dsn"`
-	// ConfigFileName (flag -c/-config) - the name of configuration file
+	// ConfigFileName (флаг -c/-config) - имя файла конфигурации.
 	ConfigFileName string `env:"CONFIG"`
-	SecretKey      string `env:"SKEY" json:"key"`
+	// SecretKey ключ для создания токена.
+	SecretKey string `env:"SKEY" json:"key"`
 }
 
-// Default values for flags.
 const (
 	defGRPC string = ":3200"
 )
@@ -63,7 +63,7 @@ func readFromConf(c *Flags) error {
 	return nil
 }
 
-// NewConfig creates an instance with settings from flags or environment variables.
+// NewConfig создает объект с настройками приложения из флагов или переменных окружения.
 func NewConfig() *Flags {
 	c := &Flags{}
 

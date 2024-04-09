@@ -18,13 +18,17 @@ import (
 
 type Ver string
 
+// PrintData используется для вывода результата пользователю.
 func (v Ver) PrintData() {
 	fmt.Println(appVersion)
 }
 
 var appVersion Ver = "v1.0.0 2024.04.09"
 
+// UserToken хранит токен текущего пользователя.
 var UserToken string
+
+// UserLogin хранит логин текущего пользователя.
 var UserLogin string
 
 var regExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
@@ -60,14 +64,17 @@ var regExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage
 	return nil, nil
 }
 
+// SyncErr хранит ошибку синхронизации.
 type SyncErr struct {
 	Text   string
 	Value  string
 	ErrMsg string
 }
 
+// SyncErrs используется для вывода результата пользователю.
 type SyncErrs []SyncErr
 
+// PrintData используется для вывода результата пользователю.
 func (s SyncErrs) PrintData() {
 	for _, v := range s {
 		fmt.Println("SYNC ERRORS")

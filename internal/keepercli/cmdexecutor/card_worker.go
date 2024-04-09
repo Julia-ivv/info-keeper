@@ -14,6 +14,7 @@ import (
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
+// UserCard хранит данные банковской карты.
 type UserCard struct {
 	Prompt    string
 	Number    string
@@ -23,8 +24,10 @@ type UserCard struct {
 	TimeStamp string
 }
 
+// Cards используется для вывода результата пользователю.
 type Cards []UserCard
 
+// PrintData используется для вывода результата пользователю.
 func (c Cards) PrintData() {
 	fmt.Println("CARD")
 	for _, v := range c {

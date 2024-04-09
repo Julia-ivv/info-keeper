@@ -12,7 +12,7 @@ import (
 	pb "github.com/Julia-ivv/info-keeper.git/internal/proto/pb"
 )
 
-// HandlerWithAuth adds user token to the handler.
+// HandlerWithAuth добавляет токен в контекст метода.
 func HandlerWithAuth(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	if info.FullMethod == pb.InfoKeeper_AddUser_FullMethodName ||
 		info.FullMethod == pb.InfoKeeper_AuthUser_FullMethodName {

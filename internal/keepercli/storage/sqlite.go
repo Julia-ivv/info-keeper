@@ -87,6 +87,7 @@ func createTables(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
+// NewSQLiteStorage создает новый объект для работы с БД.
 func NewSQLiteStorage(DBURI string) (*SQLiteStorage, error) {
 	db, err := sql.Open("sqlite", DBURI)
 	if err != nil {
@@ -106,10 +107,12 @@ func NewSQLiteStorage(DBURI string) (*SQLiteStorage, error) {
 	return &SQLiteStorage{dbHandle: db}, nil
 }
 
+// Close закрывает БД.
 func (db *SQLiteStorage) Close() error {
 	return db.dbHandle.Close()
 }
 
+// RegUser регистрирует и аутентифицирует пользователя.
 func (db *SQLiteStorage) RegUser(ctx context.Context, login string, pwd string) error {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -135,6 +138,7 @@ func (db *SQLiteStorage) RegUser(ctx context.Context, login string, pwd string) 
 	return nil
 }
 
+// AuthUser аутентифицирует пользователя.
 func (db *SQLiteStorage) AuthUser(ctx context.Context, login string, pwd string) error {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -156,6 +160,7 @@ func (db *SQLiteStorage) AuthUser(ctx context.Context, login string, pwd string)
 	return nil
 }
 
+// Card хранит информацию о банковской карте.
 type Card struct {
 	Prompt    []byte
 	Number    []byte
@@ -165,6 +170,8 @@ type Card struct {
 	TimeStamp string
 }
 
+// GetUserCardsAfterTime получает информацию о банковских картах пользователя,
+// введенную или измененную после указанного времени.
 func (db *SQLiteStorage) GetUserCardsAfterTime(ctx context.Context, userLogin string,
 	afterTime string) (cards []Card, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -205,6 +212,7 @@ func (db *SQLiteStorage) GetUserCardsAfterTime(ctx context.Context, userLogin st
 	return cards, nil
 }
 
+// GetCard получает информацию о банковской карте пользователя.
 func (db *SQLiteStorage) GetCard(ctx context.Context, userLogin string, number []byte) (card Card, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -232,6 +240,7 @@ func (db *SQLiteStorage) GetCard(ctx context.Context, userLogin string, number [
 	}, nil
 }
 
+// LoginPwd хранит информацию о паре логин-пароль.
 type LoginPwd struct {
 	Prompt    []byte
 	Login     []byte
@@ -240,6 +249,8 @@ type LoginPwd struct {
 	TimeStamp string
 }
 
+// GetUserLoginsPwdsAfterTime получает информацию и парах логин-пароль,
+// введенную или измененную после указанного времени.
 func (db *SQLiteStorage) GetUserLoginsPwdsAfterTime(ctx context.Context, userLogin string,
 	afterTime string) (loginsPwds []LoginPwd, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -279,6 +290,7 @@ func (db *SQLiteStorage) GetUserLoginsPwdsAfterTime(ctx context.Context, userLog
 	return loginsPwds, nil
 }
 
+// GetLoginPwd получает данные о паре логин-пароль.
 func (db *SQLiteStorage) GetLoginPwd(ctx context.Context, userLogin string, prompt []byte, login []byte) (loginPwd LoginPwd, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -305,6 +317,7 @@ func (db *SQLiteStorage) GetLoginPwd(ctx context.Context, userLogin string, prom
 	}, nil
 }
 
+// TextRecord хранит текстовую информацию.
 type TextRecord struct {
 	Prompt    []byte
 	Data      []byte
@@ -312,6 +325,8 @@ type TextRecord struct {
 	TimeStamp string
 }
 
+// GetUserTextRecordsAfterTime получает всю текстовую информацию пользователя,
+// добавленную или измененную после указанного времени.
 func (db *SQLiteStorage) GetUserTextRecordsAfterTime(ctx context.Context, userLogin string,
 	afterTime string) (records []TextRecord, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -349,6 +364,7 @@ func (db *SQLiteStorage) GetUserTextRecordsAfterTime(ctx context.Context, userLo
 	return records, nil
 }
 
+// GetTextRecord получает текстовые данные.
 func (db *SQLiteStorage) GetTextRecord(ctx context.Context, userLogin string, prompt []byte) (record TextRecord, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -374,6 +390,7 @@ func (db *SQLiteStorage) GetTextRecord(ctx context.Context, userLogin string, pr
 	}, nil
 }
 
+// BinaryRecord хранит бинарные данные.
 type BinaryRecord struct {
 	Prompt    []byte
 	Data      []byte
@@ -381,6 +398,8 @@ type BinaryRecord struct {
 	TimeStamp string
 }
 
+// GetUserBinaryRecordsAfterTime получает бинарную информацию пользователя,
+// добавленную или измененную после указанного времени.
 func (db *SQLiteStorage) GetUserBinaryRecordsAfterTime(ctx context.Context, userLogin string,
 	afterTime string) (records []BinaryRecord, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -418,6 +437,7 @@ func (db *SQLiteStorage) GetUserBinaryRecordsAfterTime(ctx context.Context, user
 	return records, nil
 }
 
+// GetBinaryRecord получает бинарную информацию.
 func (db *SQLiteStorage) GetBinaryRecord(ctx context.Context, userLogin string, prompt []byte) (record BinaryRecord, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -443,6 +463,7 @@ func (db *SQLiteStorage) GetBinaryRecord(ctx context.Context, userLogin string, 
 	}, nil
 }
 
+// GetLastSyncTime получает время последней синхронизации.
 func (db *SQLiteStorage) GetLastSyncTime(ctx context.Context, userLogin string) (lastSync string, err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -460,6 +481,7 @@ func (db *SQLiteStorage) GetLastSyncTime(ctx context.Context, userLogin string) 
 	return lastSync, nil
 }
 
+// UpdateLastSyncTime обновляет время последней синхронизации.
 func (db *SQLiteStorage) UpdateLastSyncTime(ctx context.Context, userLogin string, syncTime string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -481,6 +503,7 @@ func (db *SQLiteStorage) UpdateLastSyncTime(ctx context.Context, userLogin strin
 	return nil
 }
 
+// AddCard добавляет информацию о банковской карте.
 func (db *SQLiteStorage) AddCard(ctx context.Context, userLogin string, prompt []byte, number []byte, date []byte,
 	code []byte, note []byte, timeStamp string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -505,6 +528,7 @@ func (db *SQLiteStorage) AddCard(ctx context.Context, userLogin string, prompt [
 	return nil
 }
 
+// AddLoginPwd добавляет информацию о паре логин-пароль.
 func (db *SQLiteStorage) AddLoginPwd(ctx context.Context, userLogin string, prompt []byte, login []byte,
 	pwd []byte, note []byte, timeStamp string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -529,6 +553,7 @@ func (db *SQLiteStorage) AddLoginPwd(ctx context.Context, userLogin string, prom
 	return nil
 }
 
+// AddTextRecord добавляет текстовую информацию.
 func (db *SQLiteStorage) AddTextRecord(ctx context.Context, userLogin string, prompt []byte,
 	data []byte, note []byte, timeStamp string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -553,6 +578,7 @@ func (db *SQLiteStorage) AddTextRecord(ctx context.Context, userLogin string, pr
 	return nil
 }
 
+// AddBinaryRecord добавляет бинарную информацию.
 func (db *SQLiteStorage) AddBinaryRecord(ctx context.Context, userLogin string, prompt []byte,
 	data []byte, note []byte, timeStamp string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -577,6 +603,7 @@ func (db *SQLiteStorage) AddBinaryRecord(ctx context.Context, userLogin string, 
 	return nil
 }
 
+// AddSyncData добавляет новые данные, полученные от сервера при синхронизации.
 func (db *SQLiteStorage) AddSyncData(ctx context.Context, userLogin string,
 	cards []Card, logins []LoginPwd, texts []TextRecord, binarys []BinaryRecord) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -670,6 +697,7 @@ func (db *SQLiteStorage) AddSyncData(ctx context.Context, userLogin string,
 	return tx.Commit()
 }
 
+// UpdateCard обновляет информацию о банковской карте.
 func (db *SQLiteStorage) UpdateCard(ctx context.Context, userLogin string, prompt []byte,
 	number []byte, date []byte, code []byte, note []byte, timeStamp string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -694,6 +722,7 @@ func (db *SQLiteStorage) UpdateCard(ctx context.Context, userLogin string, promp
 	return nil
 }
 
+// UpdateLoginPwd обновляет информацию о паре логин-пароль.
 func (db *SQLiteStorage) UpdateLoginPwd(ctx context.Context, userLogin string, prompt []byte,
 	login []byte, pwd []byte, note []byte, timeStamp string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -719,6 +748,7 @@ func (db *SQLiteStorage) UpdateLoginPwd(ctx context.Context, userLogin string, p
 	return nil
 }
 
+// UpdateTextRecord обновляет текстовую информацию.
 func (db *SQLiteStorage) UpdateTextRecord(ctx context.Context, userLogin string, prompt []byte,
 	data []byte, note []byte, timeStamp string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
@@ -743,6 +773,7 @@ func (db *SQLiteStorage) UpdateTextRecord(ctx context.Context, userLogin string,
 	return nil
 }
 
+// UpdateBinaryRecord обновляет бинарные данные.
 func (db *SQLiteStorage) UpdateBinaryRecord(ctx context.Context, userLogin string, prompt []byte,
 	data []byte, note []byte, timeStamp string) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
