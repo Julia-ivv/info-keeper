@@ -100,6 +100,7 @@ type UserArgs struct {
 	CardDate   string
 	CardCode   string
 	Login      string
+	Pwd        string
 	Text       string
 	Binary     string
 }

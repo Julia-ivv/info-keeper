@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/eiannone/keyboard"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -23,13 +22,6 @@ func main() {
 	logger.ZapSugar = logger.NewLogger()
 	logger.ZapSugar.Infow("Starting gRPC client", "port", cfg.GRPC)
 	logger.ZapSugar.Infow("Database", "path", cfg.DBURI)
-
-	if err := keyboard.Open(); err != nil {
-		logger.ZapSugar.Fatal(err)
-	}
-	defer func() {
-		_ = keyboard.Close()
-	}()
 
 	repo, err := storage.NewStorage(*cfg)
 	if err != nil {
@@ -50,6 +42,7 @@ func main() {
 		userInput, err := bufio.NewReader(os.Stdin).ReadString('\n')
 		if err != nil {
 			logger.ZapSugar.Infoln("can`t read command.", err)
+			continue
 		}
 		userCmd, userArgs, err := cmdparser.ParseUserCmd(userInput)
 		if err != nil {
@@ -59,8 +52,11 @@ func main() {
 			res, err := cmdexecutor.ExecuteCmd(userCmd, userArgs, cl, repo)
 			if err != nil {
 				logger.ZapSugar.Infoln("can`t execute command ", userCmd, err)
+				continue
 			}
-			res.PrintData()
+			if res != nil {
+				res.PrintData()
+			}
 		}
 		if userCmd == "" {
 			logger.ZapSugar.Infoln("unclear command")

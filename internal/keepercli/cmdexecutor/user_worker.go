@@ -18,7 +18,6 @@ import (
 
 var UserToken string
 var UserLogin string
-var UserPath string
 
 var regExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
 	fmt.Print("Enter your password: ")
@@ -49,7 +48,6 @@ var regExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage
 		return nil, err
 	}
 	UserLogin = args.AuthLogin
-	UserPath = "./" + UserLogin + "/"
 
 	return nil, nil
 }
@@ -153,7 +151,7 @@ var authExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storag
 		return nil, err
 	}
 
-	resp, err := cl.AuthUser(context.Background(), &pb.AuthUserRequest{Login: UserLogin, Pwd: string(password)})
+	resp, err := cl.AuthUser(context.Background(), &pb.AuthUserRequest{Login: args.AuthLogin, Pwd: string(password)})
 	if err != nil {
 		return nil, err
 	}
@@ -165,17 +163,18 @@ var authExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storag
 
 	UserLogin = args.AuthLogin
 	UserToken = resp.GetToken()
-	UserPath = "./" + UserLogin + "/"
 
 	return synchronization(cl, repo)
 }
 
 var exitExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
-	r, err := synchronization(cl, repo)
-	if err != nil {
-		fmt.Println(err)
+	if UserLogin != "" {
+		r, err := synchronization(cl, repo)
+		if err != nil {
+			fmt.Println(err)
+		}
+		r.PrintData()
 	}
-	r.PrintData()
 	os.Exit(0)
 	return nil, nil
 }

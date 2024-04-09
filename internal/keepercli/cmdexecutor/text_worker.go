@@ -82,7 +82,7 @@ var getTextExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo sto
 }
 
 var getTextsExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
-	ts, err := repo.GetUserTextRecordsAfterTime(context.Background(), UserLogin, time.Now().AddDate(100, 0, 0).Format(time.RFC3339))
+	ts, err := repo.GetUserTextRecordsAfterTime(context.Background(), UserLogin, time.Now().AddDate(-100, 0, 0).Format(time.RFC3339))
 	if err != nil {
 		return nil, err
 	}

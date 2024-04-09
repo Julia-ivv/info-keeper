@@ -42,7 +42,6 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect

@@ -156,6 +156,7 @@ type EncryptArgs struct {
 	CardDate   []byte
 	CardCode   []byte
 	Login      []byte
+	Pwd        []byte
 	Text       []byte
 	Binary     []byte
 }
@@ -193,6 +194,12 @@ func encryptArgs(a cmdparser.UserArgs) (enA EncryptArgs, err error) {
 	}
 	if a.Login != "" {
 		enA.Login, err = cryptor.EncryptsString(a.Login)
+		if err != nil {
+			return
+		}
+	}
+	if a.Pwd != "" {
+		enA.Pwd, err = cryptor.EncryptsString(a.Pwd)
 		if err != nil {
 			return
 		}

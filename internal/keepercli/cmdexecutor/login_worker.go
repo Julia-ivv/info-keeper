@@ -25,7 +25,7 @@ type UserLoginPwd struct {
 type LoginPwds []UserLoginPwd
 
 func (l LoginPwds) PrintData() {
-	fmt.Println("LOGIN PWD")
+	fmt.Println("LOGIN PASSWORD")
 	for _, v := range l {
 		fmt.Println("Prompt: ", v.Prompt)
 		fmt.Println("Login: ", v.Login)
@@ -36,18 +36,19 @@ func (l LoginPwds) PrintData() {
 }
 
 var addLoginExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
-	enA, err := encryptArgs(args)
-	if err != nil {
-		return nil, err
-	}
-
 	fmt.Print("Enter password: ")
 	pwd, err := go_asterisks.GetUsersPassword("", true, os.Stdin, os.Stdout)
 	if err != nil {
 		return nil, err
 	}
 
-	err = repo.AddLoginPwd(context.Background(), UserLogin, enA.Prompt, enA.Login, pwd, enA.Note, time.Now().Format(time.RFC3339))
+	args.Pwd = string(pwd)
+	enA, err := encryptArgs(args)
+	if err != nil {
+		return nil, err
+	}
+
+	err = repo.AddLoginPwd(context.Background(), UserLogin, enA.Prompt, enA.Login, enA.Pwd, enA.Note, time.Now().Format(time.RFC3339))
 	if err != nil {
 		return nil, err
 	}
@@ -56,18 +57,19 @@ var addLoginExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo st
 }
 
 var updLoginExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
-	enA, err := encryptArgs(args)
-	if err != nil {
-		return nil, err
-	}
-
 	fmt.Print("Enter password: ")
 	pwd, err := go_asterisks.GetUsersPassword("", true, os.Stdin, os.Stdout)
 	if err != nil {
 		return nil, err
 	}
 
-	err = repo.UpdateLoginPwd(context.Background(), UserLogin, enA.Prompt, enA.Login, pwd, enA.Note, time.Now().Format(time.RFC3339))
+	args.Pwd = string(pwd)
+	enA, err := encryptArgs(args)
+	if err != nil {
+		return nil, err
+	}
+
+	err = repo.UpdateLoginPwd(context.Background(), UserLogin, enA.Prompt, enA.Login, enA.Pwd, enA.Note, time.Now().Format(time.RFC3339))
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +104,7 @@ var getLoginExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo st
 }
 
 var getLoginsExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
-	ls, err := repo.GetUserLoginsPwdsAfterTime(context.Background(), UserLogin, time.Now().AddDate(100, 0, 0).Format(time.RFC3339))
+	ls, err := repo.GetUserLoginsPwdsAfterTime(context.Background(), UserLogin, time.Now().AddDate(-100, 0, 0).Format(time.RFC3339))
 	if err != nil {
 		return nil, err
 	}

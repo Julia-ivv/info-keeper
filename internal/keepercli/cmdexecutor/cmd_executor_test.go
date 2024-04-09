@@ -27,7 +27,7 @@ var (
 	testUserLogins = LoginPwds{{
 		Prompt:    ttArgs.Prompt,
 		Login:     ttArgs.Login,
-		Pwd:       "pwd",
+		Pwd:       ttArgs.Pwd,
 		Note:      ttArgs.Note,
 		TimeStamp: testTime,
 	}}
@@ -51,6 +51,7 @@ var (
 		CardDate:   "12/24",
 		CardCode:   "555",
 		Login:      "login",
+		Pwd:        "pwd",
 		Text:       "text",
 		Binary:     nameTestFile,
 	}
@@ -104,7 +105,7 @@ func TestExecuteCmd(t *testing.T) {
 		{
 			name: "ok get cards test",
 			prepare: func(m *mocks.MockRepositorier, mcli *mocks.MockInfoKeeperClient) {
-				m.EXPECT().GetUserCardsAfterTime(context.Background(), "", time.Now().AddDate(100, 0, 0).Format(time.RFC3339)).
+				m.EXPECT().GetUserCardsAfterTime(context.Background(), "", time.Now().AddDate(-100, 0, 0).Format(time.RFC3339)).
 					Return([]storage.Card{testCard}, nil)
 			},
 			userCmd: cmdparser.CmdGetCards,
@@ -154,7 +155,7 @@ func TestExecuteCmd(t *testing.T) {
 		{
 			name: "ok get logins test",
 			prepare: func(m *mocks.MockRepositorier, mcli *mocks.MockInfoKeeperClient) {
-				m.EXPECT().GetUserLoginsPwdsAfterTime(context.Background(), "", time.Now().AddDate(100, 0, 0).Format(time.RFC3339)).
+				m.EXPECT().GetUserLoginsPwdsAfterTime(context.Background(), "", time.Now().AddDate(-100, 0, 0).Format(time.RFC3339)).
 					Return([]storage.LoginPwd{testLoginPwd}, nil)
 			},
 			userCmd: cmdparser.CmdGetLogins,
@@ -223,7 +224,7 @@ func TestExecuteCmd(t *testing.T) {
 		{
 			name: "ok get texts test",
 			prepare: func(m *mocks.MockRepositorier, mcli *mocks.MockInfoKeeperClient) {
-				m.EXPECT().GetUserTextRecordsAfterTime(context.Background(), "", time.Now().AddDate(100, 0, 0).Format(time.RFC3339)).
+				m.EXPECT().GetUserTextRecordsAfterTime(context.Background(), "", time.Now().AddDate(-100, 0, 0).Format(time.RFC3339)).
 					Return([]storage.TextRecord{testTextRecord}, nil)
 			},
 			userCmd: cmdparser.CmdGetTexts,
@@ -294,7 +295,7 @@ func TestExecuteCmd(t *testing.T) {
 		{
 			name: "ok get all bytes test",
 			prepare: func(m *mocks.MockRepositorier, mcli *mocks.MockInfoKeeperClient) {
-				m.EXPECT().GetUserBinaryRecordsAfterTime(context.Background(), "", time.Now().AddDate(100, 0, 0).Format(time.RFC3339)).
+				m.EXPECT().GetUserBinaryRecordsAfterTime(context.Background(), "", time.Now().AddDate(-100, 0, 0).Format(time.RFC3339)).
 					Return([]storage.BinaryRecord{testBinaryRecord}, nil)
 			},
 			userCmd: cmdparser.CmdGetBinarys,
@@ -370,39 +371,41 @@ func TestSynchronization(t *testing.T) {
 		{
 			name: "ok sync test",
 			prepare: func(m *mocks.MockRepositorier, mcli *mocks.MockInfoKeeperClient) {
-				m.EXPECT().GetLastSyncTime(context.Background(), "").
-					Return(testSyncTime, nil)
-				m.EXPECT().GetUserCardsAfterTime(context.Background(), "", testSyncTime).
-					Return([]storage.Card{testCard}, nil)
-				m.EXPECT().GetUserLoginsPwdsAfterTime(context.Background(), "", testSyncTime).
-					Return([]storage.LoginPwd{testLoginPwd}, nil)
-				m.EXPECT().GetUserTextRecordsAfterTime(context.Background(), "", testSyncTime).
-					Return([]storage.TextRecord{testTextRecord}, nil)
-				m.EXPECT().GetUserBinaryRecordsAfterTime(context.Background(), "", testSyncTime).
-					Return([]storage.BinaryRecord{testBinaryRecord}, nil)
-				mcli.EXPECT().SyncUserData(ctxMd, &pb.SyncUserDataRequest{
-					Logins:        []*pb.UserLoginPwd{loginToPb(testLoginPwd)},
-					Cards:         []*pb.UserCard{cardToPb(testCard)},
-					TextRecords:   []*pb.UserTextRecord{textToPb(testTextRecord)},
-					BinaryRecords: []*pb.UserBinaryRecord{binaryToPb(testBinaryRecord)},
-					LastSync:      testSyncTime,
-				}).Return(&pb.SyncUserDataResponse{
-					SyncErrors: []*pb.SyncUserDataResponse_SyncErrorInfo{{
-						Text:  "text error",
-						Value: []byte{20, 89, 224, 162, 229, 20, 169, 198, 23, 48, 193, 238, 14, 23, 152, 188, 173, 160, 95},
-						Err:   "error",
-					}},
-					NewLogins:        []*pb.UserLoginPwd{loginToPb(testLoginPwd)},
-					NewCards:         []*pb.UserCard{cardToPb(testCard)},
-					NewTextRecords:   []*pb.UserTextRecord{textToPb(testTextRecord)},
-					NewBinaryRecords: []*pb.UserBinaryRecord{binaryToPb(testBinaryRecord)},
-				}, nil)
-				m.EXPECT().AddSyncData(context.Background(), "",
-					[]storage.Card{testCard}, []storage.LoginPwd{testLoginPwd},
-					[]storage.TextRecord{testTextRecord}, []storage.BinaryRecord{testBinaryRecord}).
-					Return(nil)
-				m.EXPECT().UpdateLastSyncTime(context.Background(), "", time.Now().Format(time.RFC3339)).
-					Return(nil)
+				gomock.InOrder(
+					m.EXPECT().GetLastSyncTime(context.Background(), "").
+						Return(testSyncTime, nil),
+					m.EXPECT().GetUserCardsAfterTime(context.Background(), "", testSyncTime).
+						Return([]storage.Card{testCard}, nil),
+					m.EXPECT().GetUserLoginsPwdsAfterTime(context.Background(), "", testSyncTime).
+						Return([]storage.LoginPwd{testLoginPwd}, nil),
+					m.EXPECT().GetUserTextRecordsAfterTime(context.Background(), "", testSyncTime).
+						Return([]storage.TextRecord{testTextRecord}, nil),
+					m.EXPECT().GetUserBinaryRecordsAfterTime(context.Background(), "", testSyncTime).
+						Return([]storage.BinaryRecord{testBinaryRecord}, nil),
+					mcli.EXPECT().SyncUserData(ctxMd, &pb.SyncUserDataRequest{
+						Logins:        []*pb.UserLoginPwd{loginToPb(testLoginPwd)},
+						Cards:         []*pb.UserCard{cardToPb(testCard)},
+						TextRecords:   []*pb.UserTextRecord{textToPb(testTextRecord)},
+						BinaryRecords: []*pb.UserBinaryRecord{binaryToPb(testBinaryRecord)},
+						LastSync:      testSyncTime,
+					}).Return(&pb.SyncUserDataResponse{
+						SyncErrors: []*pb.SyncUserDataResponse_SyncErrorInfo{{
+							Text:  "text error",
+							Value: []byte{20, 89, 224, 162, 229, 20, 169, 198, 23, 48, 193, 238, 14, 23, 152, 188, 173, 160, 95},
+							Err:   "error",
+						}},
+						NewLogins:        []*pb.UserLoginPwd{loginToPb(testLoginPwd)},
+						NewCards:         []*pb.UserCard{cardToPb(testCard)},
+						NewTextRecords:   []*pb.UserTextRecord{textToPb(testTextRecord)},
+						NewBinaryRecords: []*pb.UserBinaryRecord{binaryToPb(testBinaryRecord)},
+					}, nil),
+					m.EXPECT().AddSyncData(context.Background(), "",
+						[]storage.Card{testCard}, []storage.LoginPwd{testLoginPwd},
+						[]storage.TextRecord{testTextRecord}, []storage.BinaryRecord{testBinaryRecord}).
+						Return(nil),
+					m.EXPECT().UpdateLastSyncTime(context.Background(), "", gomock.Any()).
+						Return(nil),
+				)
 			},
 			wantErr: false,
 			wantRes: true,

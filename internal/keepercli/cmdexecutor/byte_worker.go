@@ -109,11 +109,11 @@ var getBinaryExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo s
 		return nil, err
 	}
 
-	err = os.WriteFile(UserPath+args.Prompt, deB.Data, 0666)
+	err = os.WriteFile(args.Prompt, deB.Data, 0666)
 	if err != nil {
 		return nil, err
 	}
-	deB.File = UserPath + args.Prompt
+	deB.File = args.Prompt
 	deB.Data = nil
 
 	res := make(BinaryRecords, 0, 1)
@@ -123,7 +123,7 @@ var getBinaryExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo s
 }
 
 var getBinarysExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
-	bs, err := repo.GetUserBinaryRecordsAfterTime(context.Background(), UserLogin, time.Now().AddDate(100, 0, 0).Format(time.RFC3339))
+	bs, err := repo.GetUserBinaryRecordsAfterTime(context.Background(), UserLogin, time.Now().AddDate(-100, 0, 0).Format(time.RFC3339))
 	if err != nil {
 		return nil, err
 	}
@@ -134,12 +134,12 @@ var getBinarysExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo 
 		if err != nil {
 			return nil, err
 		}
-		err = os.WriteFile(UserPath+args.Prompt, b.Data, 0666)
+		err = os.WriteFile(args.Prompt, b.Data, 0666)
 		if err != nil {
 			return nil, err
 		}
 		b.Data = nil
-		b.File = UserPath + b.Prompt
+		b.File = b.Prompt
 		res = append(res, b)
 	}
 
@@ -186,11 +186,11 @@ var getBinaryServerExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, 
 		return nil, err
 	}
 
-	err = os.WriteFile(UserPath+args.Prompt, deB.Data, 0666)
+	err = os.WriteFile(args.Prompt, deB.Data, 0666)
 	if err != nil {
 		return nil, err
 	}
-	deB.File = UserPath + args.Prompt
+	deB.File = args.Prompt
 	deB.Data = nil
 
 	res := make(BinaryRecords, 0, 1)

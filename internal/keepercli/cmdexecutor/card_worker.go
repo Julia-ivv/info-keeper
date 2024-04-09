@@ -89,7 +89,7 @@ var getCardExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo sto
 }
 
 var getCardsExec = func(args cmdparser.UserArgs, cl pb.InfoKeeperClient, repo storage.Repositorier) (DataPrinter, error) {
-	cs, err := repo.GetUserCardsAfterTime(context.Background(), UserLogin, time.Now().AddDate(100, 0, 0).Format(time.RFC3339))
+	cs, err := repo.GetUserCardsAfterTime(context.Background(), UserLogin, time.Now().AddDate(-100, 0, 0).Format(time.RFC3339))
 	if err != nil {
 		return nil, err
 	}
