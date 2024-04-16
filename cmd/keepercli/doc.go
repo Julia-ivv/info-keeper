@@ -20,7 +20,7 @@
 
 # Запуск клиента.
 
-Скачайте исполняетмый файл:
+Скачайте исполняемый файл:
 
 https://github.com/Julia-ivv/info-keeper/releases/tag/v1.0.0
 
