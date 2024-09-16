@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/Julia-ivv/info-keeper.git/internal/proto";
+
+message UserLoginPwd {
+  bytes prompt = 1;
+  bytes login = 2;
+  bytes pwd = 3;
+  bytes note = 4;
+  string time_stamp = 5;
+}

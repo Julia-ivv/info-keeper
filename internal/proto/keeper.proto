@@ -1,0 +1,148 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/Julia-ivv/info-keeper.git/internal/proto";
+
+import "user_card.proto";
+import "user_login_pwd.proto";
+import "user_text_record.proto";
+import "user_binary_record.proto";
+
+message AddUserRequest {
+  string login = 1;
+  string pwd = 2;
+}
+
+message AddUserResponse {
+  string token = 1;
+}
+ 
+message AuthUserRequest {
+  string login = 1;
+  string pwd = 2;
+}
+
+message AuthUserResponse {
+  string token = 1;
+}
+
+message AddCardRequest {
+  UserCard card = 1;
+}
+
+message AddCardResponse {}
+
+message AddLoginRequest {
+  UserLoginPwd login_pwd = 1;
+}
+
+message AddLoginResponse {}
+
+message AddBinaryDataRequest {
+  UserBinaryRecord binary_record = 1;
+}
+
+message AddBinaryDataResponse {}
+
+message AddTextDataRequest {
+  UserTextRecord text_record = 1;
+}
+
+message AddTextDataResponse {}
+
+message GetUserCardRequest {
+  bytes number = 1;
+}
+
+message GetUserCardResponse {
+  UserCard card = 1;
+}
+
+message GetUserLoginRequest {
+  bytes prompt = 1;
+  bytes login = 2;
+}
+
+message GetUserLoginResponse {
+  UserLoginPwd login_pwd = 1;
+}
+
+message GetUserTextRequest {
+  bytes prompt = 1;
+}
+
+message GetUserTextResponse {
+  UserTextRecord text_record = 1;
+}
+
+message GetUserBinaryRequest {
+  bytes prompt = 1;
+}
+
+message GetUserBinaryResponse {
+  UserBinaryRecord binary_record = 1;
+}
+
+message SyncUserDataRequest {
+  repeated UserLoginPwd logins = 1;
+  repeated UserCard cards = 2;
+  repeated UserTextRecord text_records = 3;
+  repeated UserBinaryRecord binary_records = 4;
+  string last_sync = 5;
+}
+
+message SyncUserDataResponse {
+  message SyncErrorInfo {
+    string text = 1;
+    bytes value = 2;
+    string err = 3;
+  }
+  repeated SyncErrorInfo sync_errors = 1;
+  repeated UserLoginPwd new_logins = 2;
+  repeated UserCard new_cards = 3;
+  repeated UserTextRecord new_text_records = 4;
+  repeated UserBinaryRecord new_binary_records = 5;
+}
+
+message ForceUpdateCardRequest {
+  UserCard card = 1;
+}
+
+message ForceUpdateCardResponse {}
+
+message ForceUpdateLoginPwdRequest{
+  UserLoginPwd login_pwd = 1;
+}
+
+message ForceUpdateLoginPwdResponse {}
+
+message ForceUpdateTextRecordRequest {
+  UserTextRecord text_record = 1;
+}
+
+message ForceUpdateTextRecordResponse {}
+
+message ForceUpdateBinaryRecordRequest {
+  UserBinaryRecord binary_record = 1;
+}
+
+message ForceUpdateBinaryRecordResponse {}
+
+service InfoKeeper {
+  rpc AddUser(AddUserRequest) returns (AddUserResponse);
+  rpc AuthUser(AuthUserRequest) returns (AuthUserResponse);
+  rpc AddCard(AddCardRequest) returns (AddCardResponse);
+  rpc AddLogin(AddLoginRequest) returns (AddLoginResponse);
+  rpc AddBinaryData(AddBinaryDataRequest) returns (AddBinaryDataResponse);
+  rpc AddTextData(AddTextDataRequest) returns (AddTextDataResponse);
+  rpc GetUserCard(GetUserCardRequest) returns (GetUserCardResponse);
+  rpc GetUserLogin(GetUserLoginRequest) returns (GetUserLoginResponse);
+  rpc GetUserText(GetUserTextRequest) returns (GetUserTextResponse);
+  rpc GetUserBinary(GetUserBinaryRequest) returns (GetUserBinaryResponse);
+  rpc SyncUserData(SyncUserDataRequest) returns (SyncUserDataResponse);
+  rpc ForceUpdateCard(ForceUpdateCardRequest) returns (ForceUpdateCardResponse);
+  rpc ForceUpdateLoginPwd(ForceUpdateLoginPwdRequest) returns (ForceUpdateLoginPwdResponse);
+  rpc ForceUpdateTextRecord(ForceUpdateTextRecordRequest) returns (ForceUpdateTextRecordResponse);
+  rpc ForceUpdateBinaryRecord(ForceUpdateBinaryRecordRequest) returns (ForceUpdateBinaryRecordResponse);
+}

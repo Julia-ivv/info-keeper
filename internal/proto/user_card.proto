@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/Julia-ivv/info-keeper.git/internal/proto";
+
+message UserCard {
+  bytes prompt = 1;
+  bytes number = 2;
+  bytes date = 3;
+  bytes code = 4;
+  bytes note = 5;
+  string time_stamp = 6;
+}
